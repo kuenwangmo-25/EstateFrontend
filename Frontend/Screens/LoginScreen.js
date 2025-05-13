@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState,useContext } from 'react';
 import {
   Text,
   View,
@@ -10,42 +10,107 @@ import {
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import jwt_decode from "jwt-decode";
+import AuthGlobal from '../Context/store/AuthGlobal';
+import baseURL from '../assets/common/baseUrl';
+import axios from 'axios';
+import Toast from 'react-native-toast-message';
+
 
 const LoginScreen = ({ navigation }) => {
+
+
+
+
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const [secureText, setSecureText] = useState(true); // Declare state for password visibility
+
+  const { stateUser, dispatch } = useContext(AuthGlobal); // Access context state and dispatch
 
   const validateEmail = (email) => {
     const regex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
     return regex.test(email);
   };
 
-  const handleLogin = () => {
+  const handleLogin = async () => {
     if (!email || !password) {
-      setError('Please fill in your credential');
-      setTimeout(() => setError(''), 1000);
+      Toast.show({
+        type: 'error',
+        text1: 'Missing Fields',
+        text2: 'Please fill in your credentials',
+      });
       return;
     }
-
+  
     if (!validateEmail(email)) {
-      setError('Please enter a valid email address');
-      setTimeout(() => setError(''), 1000);
+      Toast.show({
+        type: 'error',
+        text1: 'Invalid Email',
+        text2: 'Please enter a valid email address',
+      });
       return;
     }
+  
+    try {
+      const response = await axios.post(`${baseURL}/login`, {
+        email,
+        password,
+      });
+      console.log(response.data.status)
+      if (response.data.status === 'success') {
 
-    setError('');
-    console.log('Logging in with:', email, password);
-    navigation.replace('Home');
+        const token = response.data.token;
+        console.log(token)
+
+        await AsyncStorage.setItem('jwt', token);
+        const decoded = jwt_decode(token);
+        console.log("decode:",decoded)
+  
+        // Dispatch login success to context
+        dispatch({
+          type: 'LOGIN_SUCCESS',
+          payload: decoded, // or response.data.user if available
+        });
+
+  
+        Toast.show({
+          type: 'success',
+          text1: 'Login Successful',
+          text2: 'Welcome back!',
+        });
+        navigation.navigate("Home");  // Navigate right after login
+
+  
+      } else {
+        Toast.show({
+          type: 'error',
+          text1: 'Login Failed',
+          text2: 'Invalid credentials',
+        });
+      }
+  
+    } catch (error) {
+      Toast.show({
+        type: 'error',
+        text1: 'Login Failed',
+        text2: error?.response?.data?.message || 'Incorrect email or password',
+        
+      });
+    }
   };
-
+  
   const handleForgotPassword = () => {
-    navigation.navigate('FogotPassword');
+    navigation.navigate('ForgotPassword');
   };
 
   const handleSignUp = () => {
     navigation.navigate('Register');
   };
+
+  const toggleSecureText = () => setSecureText(!secureText); // Toggle function
 
   return (
     <KeyboardAwareScrollView

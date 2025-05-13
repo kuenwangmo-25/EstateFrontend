@@ -1,7 +1,7 @@
-import React, { useState } from "react";
+import React, { useState,useEffect } from "react";
 import {
   View, Text, TextInput, TouchableOpacity,
-  Image, StyleSheet, Modal
+  Image, StyleSheet, Modal,ScrollView
 } from "react-native";
 import DropDownPicker from "react-native-dropdown-picker";
 import DateTimePicker from "@react-native-community/datetimepicker";
@@ -11,6 +11,11 @@ import { Button } from "react-native-paper";
 import Icon from "react-native-vector-icons/FontAwesome";
 import Header from '../Shared/Header';
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
+import axios from "axios";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import baseURL from '../assets/common/baseUrl';
+import Toast from 'react-native-toast-message';
+
 
 const IssueReport = ({ navigation }) => {
   const [location, setLocation] = useState("");
@@ -21,13 +26,25 @@ const IssueReport = ({ navigation }) => {
   const [image, setImage] = useState(null);
 
   const [open, setOpen] = useState(false);
-  const [category, setCategory] = useState(null);
-  const [items, setItems] = useState([
-    { label: "Electrical", value: "Electrical" },
-    { label: "Plumbing", value: "Plumbing" },
-    { label: "Carpentry", value: "Carpentry" },
-    { label: "Cleaning", value: "Cleaning" },
-  ]);
+  
+    const [items, setItems] = useState([]);
+    const [category, setCategory] = useState(null);
+  useEffect(() => {
+  const fetchCategories = async () => {
+    try {
+      const res = await axios.get(`${baseURL}/getallcategories`);
+      const formattedItems = res.data.data.map((cat) => ({
+        label: cat.name,
+        value: cat._id,
+      }));
+      setItems(formattedItems);
+    } catch (err) {
+      console.error("Failed to load categories:", err.message);
+    }
+  };
+
+  fetchCategories();
+}, []);
 
   const handleImagePick = async () => {
     const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
@@ -51,19 +68,65 @@ const IssueReport = ({ navigation }) => {
     }
   };
 
-  const handleSubmit = () => {
-    console.log("Issue Submitted:", { location, contact, category, date, description, image });
-    navigation.goBack();
-  };
+const handleSubmit = async () => {
+  try {
+
+    const token = await AsyncStorage.getItem("jwt");
+    if (!token) {
+      alert("You are not authenticated.");
+      return;
+    }
+        console.log(token)
+
+
+    const formData = new FormData();
+    formData.append("location", location);
+    formData.append("contact", contact);
+    formData.append("description", description);
+    formData.append("category", category); // if you're sending string
+    formData.append("date", date.toISOString());
+
+    if (image) {
+      const fileName = image.split('/').pop();
+      const fileType = fileName.split('.').pop();
+
+      formData.append("photo", {
+        uri: image,
+        type: `image/${fileType}`,
+        name: fileName,
+      });
+    }
+
+    const response = await axios.post(`${baseURL}/issue`, formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    console.log(response.data)
+
+    if (response.status === 201) {
+      alert("Issue reported successfully!");
+      navigation.goBack();
+    } else {
+      alert("Something went wrong.");
+    }
+  } catch (err) {
+    console.error(err);
+    alert("Failed to submit issue.");
+  }
+};
+
 
   const formattedDate = `${date.toLocaleString('default', { month: 'long' })} ${date.getDate()}`;
 
   return (
     <View style={styles.container}>
       <Header navigation={navigation} />
-
+      
+      <ScrollView>
       <TouchableOpacity
-        style={styles.issueListButton}
+        style={[styles.issueListButton, { zIndex: 10 }]} // Make sure the button is above other elements
         onPress={() => navigation.navigate('IssueList')}
       >
         <Icon name="exclamation-circle" size={20} color="#097969" />
@@ -160,6 +223,7 @@ const IssueReport = ({ navigation }) => {
           Submit
         </Button>
       </View>
+      </ScrollView>
     </View>
   );
 };

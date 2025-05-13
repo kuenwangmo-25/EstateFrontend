@@ -5,20 +5,56 @@ import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-nat
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import FormContainer from '../Shared/FormContainer';
 import Input from '../Shared/Input';
+import Toast from 'react-native-toast-message'; // Make sure this is imported at the top
+import axios from 'axios';
+import baseURL from '../assets/common/baseUrl';
 
-const OTPConfirmScreen = ({ navigation }) => {
+const OTPConfirmScreen = ({ navigation, route }) => {
   const [otp, setOTP] = useState('');
   const [error, setError] = useState('');
+  const { email } = route.params; // Get the email passed from RegisterScreen
 
-  const handleConfirm = () => {
+  const handleConfirm = async () => {
     if (otp.trim() === '') {
       setError('Please enter the OTP');
-      setTimeout(() => setError(''), 1000); // Clear the error after 1 second
+      Toast.show({
+        type: 'error',
+        text1: 'Missing OTP',
+        text2: 'Please enter the OTP',
+      });
+      setTimeout(() => setError(''), 1000);
       return;
     }
-    navigation.navigate('Home');
-  };
 
+    try {
+      const response = await axios.post(`${baseURL}/register`, {
+        email,
+        otp,
+      });
+
+      if (response.data.status === 'success') {
+        Toast.show({
+          type: 'success',
+          text1: 'OTP Verified',
+          text2: 'Welcome!',
+        });
+        navigation.navigate('Login');
+      } else {
+        Toast.show({
+          type: 'error',
+          text1: 'Invalid OTP',
+          text2: response.data.message || 'Please try again',
+        });
+      }
+    } catch (err) {
+      console.error(err);
+      Toast.show({
+        type: 'error',
+        text1: 'Verification Failed',
+        text2: err?.response?.data?.message || 'Something went wrong',
+      });
+    }
+  };
   return (
     <KeyboardAwareScrollView
       contentContainerStyle={styles.container}

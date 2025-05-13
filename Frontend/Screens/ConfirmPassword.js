@@ -5,18 +5,55 @@ import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view
 import Icon from 'react-native-vector-icons/FontAwesome5'; // Import FontAwesome5
 import FormContainer from '../Shared/FormContainer';
 import Input from '../Shared/Input';
+import baseURL from '../assets/common/baseUrl';
+import axios from 'axios';
+
 
 const ConfirmPassword = ({ navigation }) => {
-  const [password, setPassword] = useState('');
+  const [otp, setOTP] = useState('');
   const [error, setError] = useState('');
+  const { email } = route.params; // Get the email passed from RegisterScreen
 
-  const handleConfirm = () => {
-    if (password.trim() === '') {
-      setError('Please enter the default password');
-      setTimeout(() => setError(''), 1000); // Clear the error after 1 second
+  const handleConfirm = async () => {
+    if (otp.trim() === '') {
+      setError('Please enter the OTP');
+      Toast.show({
+        type: 'error',
+        text1: 'Missing OTP',
+        text2: 'Please enter the OTP',
+      });
+      setTimeout(() => setError(''), 1000);
       return;
     }
-    navigation.navigate('Home');
+
+    try {
+      const response = await axios.post(`${baseURL}/register`, {
+        email,
+        otp,
+      });
+
+      if (response.data.status === 'success') {
+        Toast.show({
+          type: 'success',
+          text1: 'OTP Verified',
+          text2: 'Welcome!',
+        });
+        navigation.navigate('Login');
+      } else {
+        Toast.show({
+          type: 'error',
+          text1: 'Invalid OTP',
+          text2: response.data.message || 'Please try again',
+        });
+      }
+    } catch (err) {
+      console.error(err);
+      Toast.show({
+        type: 'error',
+        text1: 'Verification Failed',
+        text2: err?.response?.data?.message || 'Something went wrong',
+      });
+    }
   };
 
   return (
@@ -37,11 +74,11 @@ const ConfirmPassword = ({ navigation }) => {
         {error ? <Text style={styles.errorText}>{error}</Text> : null}
 
         <Input
-          placeholder="Password"
-          name="password"
-          id="password"
-          value={password}
-          onChangeText={setPassword}
+           placeholder="Enter OTP"
+          name="otp"
+          id="otp"
+          value={otp}
+          onChangeText={setOTP}
           keyboardType="numeric"
           icon={
             <View style={{ flexDirection: 'row', alignItems: 'center' }}>

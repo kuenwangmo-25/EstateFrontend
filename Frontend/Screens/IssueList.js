@@ -1,43 +1,65 @@
-import React, { useState } from 'react';
-import { View, Text, FlatList, TouchableOpacity, StyleSheet, ScrollView } from 'react-native';
+import React, { useState, useEffect,useContext } from 'react';
+import { View, Text, FlatList, TouchableOpacity, StyleSheet, ActivityIndicator } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import Header1 from '../Shared/Header1'; // ✅ Make sure this has a search input and passes onSearch
-import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
+import Header from '../Shared/Header1';
+import baseURL from '../assets/common/baseUrl';
+import axios from 'axios';
+import AuthGlobal from "../Context/store/AuthGlobal"; // make sure the path is correct
 
-const issues = [
-  { id: '1', category: 'Electric', title: 'Switch not working', date: 'Today' },
-  { id: '2', category: 'Carpentry', title: 'Door is broken', date: 'Today' },
-  { id: '3', category: 'Cleaning', title: 'Request for cleaning the class', date: 'Tuesday' },
-  { id: '4', category: 'Plumbing', title: 'Leakage', date: 'Tuesday' },
-  { id: '5', category: 'Electric', title: 'Switch not working', date: '24/09/2024' },
-];
 
-// Grouping helper
-const groupByDate = (data) => {
-  return data.reduce((groups, item) => {
-    const { date } = item;
+const groupByDate = (issues) => {
+  return issues.reduce((groups, issue) => {
+    const date = new Date(issue.dateReported).toISOString().split('T')[0]; // YYYY-MM-DD format
     if (!groups[date]) {
       groups[date] = [];
     }
-    groups[date].push(item);
+    groups[date].push(issue);
     return groups;
   }, {});
 };
 
+
 export default function IssueListScreen({ navigation }) {
-  const [searchQuery, setSearchQuery] = useState('');
+  const context = useContext(AuthGlobal);
+  const userId  =context?.stateUser?.user?.id;
 
-  // ✅ Filter issues by title, category, and date
-  const filteredIssues = issues.filter((issue) => {
-    const query = searchQuery.toLowerCase();
-    return (
-      issue.title.toLowerCase().includes(query) ||
-      issue.category.toLowerCase().includes(query) ||
-      issue.date.toLowerCase().includes(query)
-    );
-  });
 
-  const groupedIssues = groupByDate(filteredIssues);
+  const [groupedIssues, setGroupedIssues] = useState({});
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchIssues = async () => {
+      try {
+        const response = await axios.get(`${baseURL}/issues/${userId}`);
+        console.log('API Raw Response:', response.data);  // Log the full response
+    
+        // Ensure you're accessing the issues correctly
+        const data = response.data.data;  // Correct path to your issues array
+    
+        if (Array.isArray(data)) {
+          // Sort issues by dateReported in descending order (latest first)
+          const sortedIssues = data.sort((a, b) => new Date(b.dateReported) - new Date(a.dateReported));
+    
+          // Group the sorted issues by date
+          const grouped = groupByDate(sortedIssues);
+          console.log("Grouped Issues:", grouped);  // Check if grouping works
+          setGroupedIssues(grouped);
+        } else {
+          console.log("No issues array in response.");
+        }
+      } catch (error) {
+        console.error('Failed to fetch issues:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    
+    
+
+    if (userId) {
+      fetchIssues();
+    }
+  }, [userId]);
 
   const renderItem = ({ item }) => (
     <TouchableOpacity
@@ -48,9 +70,9 @@ export default function IssueListScreen({ navigation }) {
         <View style={styles.iconBox}>
           <Ionicons name="alert-circle" size={20} color="white" />
         </View>
-        <Text style={styles.category}>{item.category}</Text>
-      </View>
-      <Text style={styles.title}>{item.title}</Text>
+        <Text style={styles.category}>{item.category?.name || 'Unknown'}</Text>
+        </View>
+      <Text style={styles.title}>{item.description}</Text>
     </TouchableOpacity>
   );
 
@@ -65,95 +87,90 @@ export default function IssueListScreen({ navigation }) {
       {renderSectionHeader(date)}
       <FlatList
         data={issues}
-        keyExtractor={(item) => item.id}
+        keyExtractor={(item) => item._id}
         renderItem={renderItem}
         ItemSeparatorComponent={() => <View style={styles.separator} />}
       />
     </View>
   );
 
-  return (
-    <ScrollView contentContainerStyle={styles.container}>
-      <Header1 navigation={navigation} onSearch={setSearchQuery} />
+  if (loading) {
+    return (
+      <View style={styles.container}>
+        <Header navigation={navigation} />
+        <ActivityIndicator size="large" color="#E3963E" />
+      </View>
+    );
+  }
 
-      {filteredIssues.length === 0 ? (
-        <Text style={styles.noResultText}>No issues found.</Text>
-      ) : (
-        <FlatList
-          data={Object.keys(groupedIssues)}
-          keyExtractor={(date) => date}
-          renderItem={({ item: date }) =>
-            renderSection({ date, issues: groupedIssues[date] })
-          }
-          contentContainerStyle={styles.listContent}
-        />
-      )}
-    </ScrollView>
+  return (
+    <View style={styles.container}>
+      <Header navigation={navigation} />
+      <FlatList
+        data={Object.keys(groupedIssues)}
+        keyExtractor={(date) => date}
+        renderItem={({ item: date }) => renderSection({ date, issues: groupedIssues[date] })}
+        contentContainerStyle={styles.listContent}
+      />
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: { 
     flex: 1, 
-    padding: wp(4),
-    paddingTop: hp(8),  // Adding top padding to ensure header doesn't overlap content
-    backgroundColor: '#f1f2f6',  
+    padding: 16, 
+    backgroundColor: '#f1f2f6',
   },
   card: {
     backgroundColor: '#fff',
-    padding: wp(3),  
+    padding: 12,
     borderRadius: 8,
-    elevation: 3,  
-    marginBottom: wp(5),  
+    elevation: 3,
+    marginBottom: 12,
   },
   categoryWrapper: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: wp(2),  
+    marginBottom: 8,
   },
   iconBox: {
-    width: wp(8),  
-    height: wp(8),  
-    borderRadius: wp(4),  
+    width: 30,
+    height: 30,
+    borderRadius: 15,
     backgroundColor: '#E3963E',
     justifyContent: 'center',
     alignItems: 'center',
-    marginRight: wp(3),  
+    marginRight: 10,
   },
   category: {
     fontWeight: 'bold',
-    fontSize: wp(4.5),  
-    color: '#333',  
+    fontSize: 18,
+    color: '#333',
   },
   title: {
-    fontSize: wp(4),  
-    color: '#555',  
+    fontSize: 16,
+    color: '#555',
   },
   separator: {
-    height: wp(3),  
+    height: 12,
   },
   dateHeader: {
     backgroundColor: '#f2f2f2',
-    paddingVertical: wp(2),  
-    paddingHorizontal: wp(4),  
+    paddingVertical: 8,
+    paddingHorizontal: 16,
     borderRadius: 5,
-    marginBottom: wp(2),
+    marginBottom: 5,
   },
   dateText: {
     fontWeight: 'bold',
-    fontSize: wp(4),  
+    fontSize: 16,
     color: '#E3963E',
   },
   sectionWrapper: {
-    marginBottom: wp(5),  
+    marginBottom: 20,
   },
   listContent: {
-    paddingTop: hp(4),  
-  },
-  noResultText: {
-    textAlign: 'center',
-    color: '#999',
-    fontSize: wp(4),
-    marginTop: hp(2),
+    marginTop: 80,
   },
 });

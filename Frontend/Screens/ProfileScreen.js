@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState,useContext,useEffect } from "react";
 import {
   View,
   Text,
@@ -10,12 +10,37 @@ import {
 import Header from "../Shared/Header";
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from "react-native-responsive-screen";
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import axios from 'axios';
+import AuthGlobal from "../Context/store/AuthGlobal"; // make sure the path is correct
+import baseURL from "../assets/common/baseUrl";
 
 const ProfileScreen = ({ navigation }) => {
+  const [userProfile, setUserProfile] = useState(null);
+
   const [showResetFields, setShowResetFields] = useState(false);
   const [oldPassword, setOldPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const context = useContext(AuthGlobal);
+
+    useEffect(() => {
+      AsyncStorage.getItem("jwt")
+        .then((res) => {
+          if (context?.stateUser?.user?.id) {
+            axios.get(`${baseURL}/me`, {
+                headers: { Authorization: `Bearer ${res}` },
+              })
+                .then((user) => {
+                  console.log("USER DATA:", user.data);
+                  setUserProfile(user.data);}) 
+               .catch((err) => console.log(err));
+          }
+        })
+        .catch((error) => console.log(error));
+
+      return () => setUserProfile(null);
+    }, [context?.stateUser?.isAuthenticated]);
 
   const handleResetClick = () => {
     setShowResetFields(true);
@@ -50,13 +75,13 @@ const ProfileScreen = ({ navigation }) => {
           </Text>
 
           <Text style={styles.info}>
-            <Text style={styles.label}>Name: </Text>Jigme Dema
+            <Text style={styles.label}>Name: </Text>{userProfile?.data?.name}
           </Text>
           <Text style={styles.info}>
-            <Text style={styles.label}>Email: </Text>12210053.gcit@rub.edu.bt
+            <Text style={styles.label}>Email: </Text>{userProfile?.data?.email}
           </Text>
           <Text style={styles.info}>
-            <Text style={styles.label}>Member Type: </Text>Student
+            <Text style={styles.label}>Member Type: </Text>{userProfile?.data?.role}
           </Text>
 
           {!showResetFields ? (

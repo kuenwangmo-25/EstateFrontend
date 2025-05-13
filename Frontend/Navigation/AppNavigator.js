@@ -12,7 +12,7 @@ import ProfileScreen from '../Screens/ProfileScreen';
 import FeedbackScreen from '../Screens/FeedbackScreen';
 import IssueListScreen from '../Screens/IssueList';
 import IssueDetailScreen from '../Screens/IssueDetailScreen';
-import FogotPassword from '../Screens/ForgotPassword';
+import ForgotPassword from '../Screens/ForgotPassword';
 import DefaultPassword from '../Screens/DefaultPassword';
 import ConfirmPassword from '../Screens/ConfirmPassword';
 
@@ -20,7 +20,7 @@ const Stack = createStackNavigator();
 
 function AppNavigator() {
   return (
-    <Stack.Navigator initialRouteName="Home">
+    <Stack.Navigator initialRouteName="Login">
       <Stack.Screen name="Login" component={LoginScreen} options={{headerShown: false}} />
       <Stack.Screen name="Register" component={ RegisterScreen} options={{headerShown: false}}/>
       <Stack.Screen name="Home" component={HomeScreen} options={{headerShown: false}} />
@@ -33,7 +33,7 @@ function AppNavigator() {
       <Stack.Screen name="Feedback" component={FeedbackScreen} options={{headerShown: false}}/>
       <Stack.Screen name="IssueList" component={IssueListScreen} options={{headerShown: false}}/>
       <Stack.Screen name="IssueDetail" component={IssueDetailScreen} options={{headerShown: false}}/>
-      <Stack.Screen name="FogotPassword" component={FogotPassword} options={{headerShown: false}}/>
+      <Stack.Screen name="ForgotPassword" component={ForgotPassword} options={{headerShown: false}}/>
       <Stack.Screen name="DefaultPassword" component={DefaultPassword} options={{headerShown: false}}/>
       <Stack.Screen name="confirmPassword" component={ConfirmPassword} options={{headerShown: false}}/>
 
