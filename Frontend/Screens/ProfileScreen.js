@@ -6,9 +6,10 @@ import {
   TouchableOpacity,
   ImageBackground,
   TextInput,
-  ScrollView,
 } from "react-native";
 import Header from "../Shared/Header";
+import { widthPercentageToDP as wp, heightPercentageToDP as hp } from "react-native-responsive-screen";
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
 const ProfileScreen = ({ navigation }) => {
   const [showResetFields, setShowResetFields] = useState(false);
@@ -37,10 +38,15 @@ const ProfileScreen = ({ navigation }) => {
       <View style={styles.container}>
         <Header navigation={navigation} />
 
-        <ScrollView contentContainerStyle={styles.profileCard}>
+        <KeyboardAwareScrollView
+          contentContainerStyle={styles.profileCard}
+          enableOnAndroid={true}
+          extraScrollHeight={hp(10)} // Adjusts the space when the keyboard is visible
+        >
           <Text style={styles.profileTitle}>
-            <Text style={styles.greenLine}>—</Text> Profile{" "}
-            <Text style={styles.greenLine}>—</Text>
+            <View style={styles.line} />
+            <Text style={styles.profileTitle}>  Profile </Text>
+            <View style={styles.line} />
           </Text>
 
           <Text style={styles.info}>
@@ -85,7 +91,7 @@ const ProfileScreen = ({ navigation }) => {
               </TouchableOpacity>
             </View>
           )}
-        </ScrollView>
+        </KeyboardAwareScrollView>
       </View>
     </ImageBackground>
   );
@@ -100,34 +106,34 @@ const styles = StyleSheet.create({
   },
   profileCard: {
     width: "100%",
-    height: "50%",
+    height: hp(50), // Use responsive height
     backgroundColor: "#FFFFFF",
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
-    padding: 30,
+    padding: wp(7), // Use responsive padding
     alignItems: "center",
     elevation: 3,
     position: "absolute",
     bottom: 0,
   },
   profileTitle: {
-    fontSize: 30,
+    fontSize: wp(7), // Responsive font size
     fontWeight: "bold",
     textAlign: "center",
     color: "#E67E00",
-    marginBottom: 20,
+    marginBottom: hp(3), // Responsive margin
   },
-  greenLine: {
-    color: "green",
-    fontSize: 18,
-    width: '100%', // Increased width for longer lines
-    marginHorizontal: 50,
+  line: {
+    width: wp(20), // Responsive width
+    height: 3,
+    backgroundColor: '#097969',
+    marginHorizontal: 10,
   },
   info: {
-    fontSize: 20,
+    fontSize: wp(5), // Responsive font size
     color: "#333",
-    marginBottom: 12,
-    alignSelf:'flex-start', 
+    marginBottom: hp(2), // Responsive margin
+    alignSelf: 'flex-start',
   },
   label: {
     fontWeight: "600",
@@ -135,29 +141,29 @@ const styles = StyleSheet.create({
   },
   resetText: {
     color: "#E67E00",
-    marginTop: 15,
+    marginTop: hp(2), // Responsive margin
     fontWeight: "bold",
   },
   inputSection: {
-    marginTop: 20,
+    marginTop: hp(3), // Responsive margin top
     width: "100%",
   },
   input: {
     backgroundColor: "#f3f4f6",
-    padding: 10,
+    padding: wp(3), // Responsive padding
     borderRadius: 8,
-    marginBottom: 12,
+    marginBottom: hp(2), // Responsive margin bottom
     borderColor: "#d1d5db",
     borderWidth: 1,
   },
   submitBtn: {
-    marginTop: 30,
-    width: '50%',
+    marginTop: hp(5), // Responsive margin top
+    width: wp(50), // Responsive button width
     backgroundColor: '#E67E00',
     borderRadius: 8,
     alignItems: 'center',
-    paddingVertical: 12,
-    alignSelf:"center",
+    paddingVertical: hp(2), // Responsive padding
+    alignSelf: "center",
   },
   submitText: {
     color: "#fff",

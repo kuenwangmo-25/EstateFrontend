@@ -1,7 +1,8 @@
-import React from 'react';
-import { View, Text, FlatList, TouchableOpacity, StyleSheet } from 'react-native';
+import React, { useState } from 'react';
+import { View, Text, FlatList, TouchableOpacity, StyleSheet, ScrollView } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import Header from '../Shared/Header1'; // Import your Header component
+import Header1 from '../Shared/Header1'; // ✅ Make sure this has a search input and passes onSearch
+import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 
 const issues = [
   { id: '1', category: 'Electric', title: 'Switch not working', date: 'Today' },
@@ -11,20 +12,33 @@ const issues = [
   { id: '5', category: 'Electric', title: 'Switch not working', date: '24/09/2024' },
 ];
 
-const groupByDate = (issues) => {
-  return issues.reduce((groups, issue) => {
-    const { date } = issue;
+// Grouping helper
+const groupByDate = (data) => {
+  return data.reduce((groups, item) => {
+    const { date } = item;
     if (!groups[date]) {
       groups[date] = [];
     }
-    groups[date].push(issue);
+    groups[date].push(item);
     return groups;
   }, {});
 };
 
-const groupedIssues = groupByDate(issues);
-
 export default function IssueListScreen({ navigation }) {
+  const [searchQuery, setSearchQuery] = useState('');
+
+  // ✅ Filter issues by title, category, and date
+  const filteredIssues = issues.filter((issue) => {
+    const query = searchQuery.toLowerCase();
+    return (
+      issue.title.toLowerCase().includes(query) ||
+      issue.category.toLowerCase().includes(query) ||
+      issue.date.toLowerCase().includes(query)
+    );
+  });
+
+  const groupedIssues = groupByDate(filteredIssues);
+
   const renderItem = ({ item }) => (
     <TouchableOpacity
       style={styles.card}
@@ -36,7 +50,7 @@ export default function IssueListScreen({ navigation }) {
         </View>
         <Text style={styles.category}>{item.category}</Text>
       </View>
-      <Text>{item.title}</Text>
+      <Text style={styles.title}>{item.title}</Text>
     </TouchableOpacity>
   );
 
@@ -59,67 +73,87 @@ export default function IssueListScreen({ navigation }) {
   );
 
   return (
-    <View style={styles.container}>
-      {/* Direct Header Component with original styles */}
-      <Header navigation={navigation} />
+    <ScrollView contentContainerStyle={styles.container}>
+      <Header1 navigation={navigation} onSearch={setSearchQuery} />
 
-      {/* Grouped Issue List */}
-      <FlatList
-        data={Object.keys(groupedIssues)}
-        keyExtractor={(date) => date}
-        renderItem={({ item: date }) => renderSection({ date, issues: groupedIssues[date] })}
-        contentContainerStyle={styles.listContent}  // Add space between header and content
-      />
-    </View>
+      {filteredIssues.length === 0 ? (
+        <Text style={styles.noResultText}>No issues found.</Text>
+      ) : (
+        <FlatList
+          data={Object.keys(groupedIssues)}
+          keyExtractor={(date) => date}
+          renderItem={({ item: date }) =>
+            renderSection({ date, issues: groupedIssues[date] })
+          }
+          contentContainerStyle={styles.listContent}
+        />
+      )}
+    </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, padding: 16 },
-  iconWrapper: {
-    padding: 5,
+  container: { 
+    flex: 1, 
+    padding: wp(4),
+    paddingTop: hp(8),  // Adding top padding to ensure header doesn't overlap content
+    backgroundColor: '#f1f2f6',  
   },
   card: {
     backgroundColor: '#fff',
-    padding: 12,
+    padding: wp(3),  
     borderRadius: 8,
-    elevation: 2,
+    elevation: 3,  
+    marginBottom: wp(5),  
   },
   categoryWrapper: {
-    flexDirection: 'row',  // Aligns icon and category horizontally
-    alignItems: 'center',  // Vertically aligns the icon with the category text
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: wp(2),  
   },
   iconBox: {
-    width: 30,
-    height: 30,
-    borderRadius: 15,
-    backgroundColor: '#E67E00', // Changed to orange
+    width: wp(8),  
+    height: wp(8),  
+    borderRadius: wp(4),  
+    backgroundColor: '#E3963E',
     justifyContent: 'center',
     alignItems: 'center',
-    marginRight: 10,  // Space between the icon and the category text
+    marginRight: wp(3),  
   },
   category: {
-    fontWeight: 'bold',  // Makes the category bold
-    fontSize: 20,  // Increased font size
+    fontWeight: 'bold',
+    fontSize: wp(4.5),  
+    color: '#333',  
+  },
+  title: {
+    fontSize: wp(4),  
+    color: '#555',  
   },
   separator: {
-    height: 12,
+    height: wp(3),  
   },
   dateHeader: {
     backgroundColor: '#f2f2f2',
-    padding: 10,
+    paddingVertical: wp(2),  
+    paddingHorizontal: wp(4),  
     borderRadius: 5,
-    marginBottom: 5,
+    marginBottom: wp(2),
   },
   dateText: {
     fontWeight: 'bold',
-    fontSize: 16,
-    color: '#E67E00',
+    fontSize: wp(4),  
+    color: '#E3963E',
   },
   sectionWrapper: {
-    marginBottom: 20,
+    marginBottom: wp(5),  
   },
   listContent: {
-    marginTop: 120, // Adjust space between header and list content (may need fine-tuning)
+    paddingTop: hp(4),  
+  },
+  noResultText: {
+    textAlign: 'center',
+    color: '#999',
+    fontSize: wp(4),
+    marginTop: hp(2),
   },
 });

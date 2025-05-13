@@ -1,12 +1,13 @@
 import React from "react";
 import { View, TouchableOpacity, StyleSheet } from "react-native";
 import Icon from "react-native-vector-icons/Ionicons";
+import { widthPercentageToDP as wp, heightPercentageToDP as hp } from "react-native-responsive-screen";
 
 const Header = ({ navigation }) => {
   return (
     <View style={styles.headerContainer}>
       <TouchableOpacity onPress={() => navigation.goBack()} style={styles.circleButton}>
-        <Icon name="arrow-back" size={20} color="green" />
+        <Icon name="arrow-back" size={wp('5%')} color="#097969" />
       </TouchableOpacity>
     </View>
   );
@@ -14,27 +15,27 @@ const Header = ({ navigation }) => {
 
 const styles = StyleSheet.create({
   headerContainer: {
-    flexDirection: "row", // Aligns the button and title horizontally
-    alignItems: "center", // Vertically aligns button and title
-    paddingHorizontal: 15,
-    paddingTop: 40, // Increased paddingTop to move the header slightly further down
-    position: "absolute", // Position the header absolutely
-    top: 0, // Keeps it at the top
-    left: 0, // Ensures it's at the left of the screen
-    backgroundColor: "transparent", // No background box
-    zIndex: 10, // Ensures it's on top of other content
+    flexDirection: "row",
+    alignItems: "center",
+    paddingHorizontal: wp('4%'),
+    paddingTop: hp('5%'),
+    position: "absolute",
+    top: 0,
+    left: 0,
+    backgroundColor: "transparent",
+    zIndex: 10,
   },
   circleButton: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    borderWidth: 2,
-    marginLeft: 10, // Adjusted left margin to shift the button closer to the left corner
-    marginBottom: 10,
-    borderColor: "green",
+    width: wp('10%'),
+    height: wp('10%'),
+    borderRadius: wp('5%'),
+    borderWidth: 1.5,
+    marginLeft: wp('2.5%'),
+    marginBottom: hp('1.5%'),
+    borderColor: "#097969",
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "transparent", // No fill
+    backgroundColor: "transparent",
   },
 });
 

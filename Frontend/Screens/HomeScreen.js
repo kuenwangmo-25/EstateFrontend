@@ -9,6 +9,7 @@ import {
   Dimensions,
 } from "react-native";
 import Icon from "react-native-vector-icons/FontAwesome";
+import { widthPercentageToDP as wp, heightPercentageToDP as hp } from "react-native-responsive-screen";
 
 // Get screen dimensions
 const { width, height } = Dimensions.get("window");
@@ -24,9 +25,11 @@ const HomeScreen = ({ navigation }) => {
         {/* Top Bar */}
         <View style={styles.topBar}>
           <TouchableOpacity onPress={() => navigation.navigate("ProfileScreen")}>
-            <Image
-              source={require("../assets/Images/logo.png")}
-              style={styles.profilePic}
+            <Icon
+              name="user-circle"
+              size={wp(8)} // Responsive size
+              color="#E3963E"
+              style={[styles.profilePic, { backgroundColor: 'transparent' }]}
             />
           </TouchableOpacity>
 
@@ -35,11 +38,10 @@ const HomeScreen = ({ navigation }) => {
             style={styles.logoutContainer}
           >
             <Text style={styles.logoutText}>Logout</Text>
-            <Icon name="power-off" size={30} color="#E67E00" style={{ marginLeft: 6 }} />
+            <Icon name="power-off" size={wp(7)} color="#E3963E" style={{ marginLeft: wp(1) }} />
           </TouchableOpacity>
         </View>
 
-        {/* Overlay Title and Subtitle */}
         <View style={styles.overlay}>
           <Text style={styles.title}>
             <Text style={styles.titleWhite}>Estate</Text>{"\n"}
@@ -51,7 +53,6 @@ const HomeScreen = ({ navigation }) => {
         </View>
       </ImageBackground>
 
-      {/* Bottom Content Section */}
       <View style={styles.content}>
         <View style={styles.contentInner}>
           <Text style={styles.description}>
@@ -63,7 +64,7 @@ const HomeScreen = ({ navigation }) => {
               style={styles.actionItem}
               onPress={() => navigation.navigate("Notification")}
             >
-              <Icon name="bell" size={28} color="#E67E00" />
+              <Icon name="bell" size={wp(7)} color="#E3963E" />
               <Text style={styles.actionText}>Notification</Text>
             </TouchableOpacity>
 
@@ -71,15 +72,15 @@ const HomeScreen = ({ navigation }) => {
               style={styles.actionItem}
               onPress={() => navigation.navigate("IssueReport")}
             >
-              <Icon name="file-text" size={28} color="#E67E00" />
-              <Text style={styles.actionText}>Report issue</Text>
+              <Icon name="file-text" size={wp(7)} color="#E3963E" />
+              <Text style={styles.actionText}>ReportIssue</Text>
             </TouchableOpacity>
 
             <TouchableOpacity
               style={styles.actionItem}
               onPress={() => navigation.navigate("Feedback")}
             >
-              <Icon name="thumbs-up" size={28} color="#E67E00" />
+              <Icon name="thumbs-up" size={wp(7)} color="#E3963E" />
               <Text style={styles.actionText}>Feedback</Text>
             </TouchableOpacity>
           </View>
@@ -108,8 +109,8 @@ const styles = StyleSheet.create({
   },
   topBar: {
     width: "100%",
-    paddingHorizontal: 20,
-    paddingTop: height * 0.07,
+    paddingHorizontal: wp(5), // Responsive padding
+    paddingTop: hp(5), // Responsive padding
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
@@ -118,60 +119,61 @@ const styles = StyleSheet.create({
     zIndex: 10,
   },
   profilePic: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
+    width: wp(10), // Responsive width
+    height: wp(10), // Responsive height
+    borderRadius: wp(5), // Responsive border radius
+    backgroundColor: "transparent",
+    
   },
   logoutContainer: {
     flexDirection: "row",
     alignItems: "center",
   },
   logoutText: {
-    color: "#E67E00",
-    fontSize: 16,
+    color: "#E3963E",
+    fontSize: wp(4.5), // Responsive font size
     fontWeight: "600",
   },
   overlay: {
     width: "100%",
     alignItems: "center",
     justifyContent: "flex-start",
-    paddingTop: height * 0.22, // shifted the title slightly up
-    paddingBottom: 26,
+    paddingTop: hp(25), // Responsive padding
+    paddingBottom: hp(4),
   },
   title: {
-    fontSize: 50,
+    fontSize: wp(12), // Responsive font size
     fontWeight: "bold",
     textAlign: "center",
     color: "#ffffff",
-    marginBottom: 25, // added space between title and subtitle
+    marginBottom: hp(2), // Responsive margin
   },
-  
   titleWhite: {
     color: "#FFFFFF",
   },
   titleOrange: {
-    color: "#E67E00",
+    color: "#E3963E",
   },
   subtitle: {
     color: "#ffffff",
     textAlign: "center",
-    fontSize: 18,
-    marginBottom: 80,
+    fontSize: wp(5), // Responsive font size
+    marginBottom: hp(8), // Responsive margin
   },
   content: {
     position: "absolute",
     bottom: 0,
     width: "100%",
     backgroundColor: "#FFFFFF",
-    paddingHorizontal: 25,
-    paddingVertical: 20, // reduced from 30
-    borderTopLeftRadius: 20,
-    borderTopRightRadius: 20,
+    paddingHorizontal: wp(6), // Responsive padding
+    paddingVertical: hp(3), // Responsive padding
+    borderTopLeftRadius: wp(5), // Responsive radius
+    borderTopRightRadius: wp(5), // Responsive radius
     shadowColor: "#000000",
     shadowOffset: { width: 0, height: -5 },
     shadowOpacity: 0.1,
     shadowRadius: 20,
-    minHeight: height * 0.35, // reduced from 0.4
+    minHeight: hp(35), // Responsive height
   },
   contentInner: {
     flex: 1,
@@ -180,42 +182,45 @@ const styles = StyleSheet.create({
   description: {
     textAlign: "center",
     color: "#808080",
-    fontSize: 20,
-    marginBottom: 10, // reduced from 20
+    fontSize: wp(5), // Responsive font size
+    marginBottom: hp(2), // Responsive margin
   },
   actions: {
     flexDirection: "row",
     justifyContent: "space-around",
-    marginBottom: 10, // reduced from 20
+    marginBottom: hp(2), // Responsive margin
     width: "100%",
   },
   actionItem: {
     alignItems: "center",
-    padding: 15,
+    alignSelf: "center",
+    padding: wp(4), // Responsive padding
     borderWidth: 1,
     borderColor: "#EFEFEF",
-    borderRadius: 10,
+    borderRadius: wp(2), // Responsive border radius
     backgroundColor: "#EFEFEF",
-    width: 100,
+    width: wp(27), // Responsive width
   },
   actionText: {
     color: "#4b5563",
-    marginTop: 5,
+    marginTop: hp(1), // Responsive margin
   },
   contactButton: {
-    backgroundColor: '#E67E00',
-    padding: 12,
-    borderRadius: 10,
+    backgroundColor: '#E3963E',
+    padding: wp(4), // Responsive padding
+    borderRadius: wp(2), // Responsive radius
     alignItems: "center",
     width: "50%",
     alignSelf: "center",
-    marginTop: 20, // Add slight bottom margin to shift it up
+    marginTop: hp(3), // Responsive margin
+    position: "relative", 
+    top: -hp(4),
+    paddingVertical: hp(2), // Responsive padding
   },
   contactText: {
     color: "#ffffff",
     fontWeight: "bold",
   },
 });
-
 
 export default HomeScreen;

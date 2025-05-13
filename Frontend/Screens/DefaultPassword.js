@@ -1,11 +1,19 @@
 import React from 'react';
 import { ScrollView, Text, TouchableOpacity, StyleSheet, Image, View } from 'react-native';
+import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen'; // Responsive screen utility
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'; // Import KeyboardAwareScrollView
 import FormContainer from '../Shared/FormContainer';
+import Header from '../Shared/Header';
 
 const DefaultPassword = ({ navigation }) => {
   return (
-    <ScrollView contentContainerStyle={styles.container}>
-     
+    <KeyboardAwareScrollView
+      contentContainerStyle={styles.container}
+      keyboardShouldPersistTaps="handled" // Ensures tapping outside the keyboard closes it
+    >
+      <Header
+        navigation={navigation}  // Pass navigation prop for the back button functionality
+      />
       <Image source={require('../assets/Images/logo.png')} style={styles.logo} />
 
       <FormContainer>
@@ -18,76 +26,74 @@ const DefaultPassword = ({ navigation }) => {
 
         <View style={styles.otpBox}>
           <Text style={styles.otpText}>
-            <Text style={styles.otpWord}></Text>A default password has been sent to your registered email.
-            <Text style={styles.otpWord}> </Text>Please check your inbox to proceed.
+            A default password has been sent to your registered email.
+            Please check your inbox to proceed.
           </Text>
 
-          <TouchableOpacity style={styles.button} onPress={() => navigation.navigate("confirmPassword")}>
+          <TouchableOpacity
+            style={styles.button}
+            onPress={() => navigation.navigate("confirmPassword")}
+          >
             <Text style={styles.buttonText}>Okay</Text>
           </TouchableOpacity>
         </View>
       </FormContainer>
-    </ScrollView>
+    </KeyboardAwareScrollView>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flexGrow: 1,
-    backgroundColor:'#FFFFFF',
-  // This moves the content towards the top
+    backgroundColor: '#FFFFFF',
     alignItems: 'center',
-    padding: 20,
-    marginTop: 20, // Adjusted to shift content upwards
+    padding: wp(5), // Responsive padding
+    marginTop: hp(2), // Responsive margin top
   },
   logo: {
-    width: 200,
-    height: 200,
-    // marginBottom: ,
-    marginTop: 40,
+    width: wp(50),  // Responsive width for logo
+    height: wp(50), // Responsive height for logo
+    marginBottom: hp(2), // Responsive margin bottom
+    marginTop: hp(5), // Responsive margin top
     resizeMode: 'contain',
   },
   infoText: {
     textAlign: 'center',
-    marginVertical: 5, // Reduced vertical margin to bring text closer
-    fontSize: 14,
+    marginVertical: hp(1), // Reduced vertical margin to bring text closer
+    fontSize: wp(4),  // Responsive font size
     color: '#333',
-    marginRight:"10%",
-    
+    marginRight: wp(10), // Responsive margin
   },
   otpBox: {
     width: '90%',
-    height: '70%',
-    padding: 20,
+    height: hp(30), // Responsive height
+    padding: wp(5), // Responsive padding
     backgroundColor: '#EFEFEF',
-    borderRadius: 8,
-    margin: 20,
-    marginRight:"20%",
+    borderRadius: wp(2), // Responsive border radius
+    marginTop: hp(3), // Responsive margin top
+    marginBottom: hp(3), // Responsive margin bottom
     alignItems: 'center',
     justifyContent: 'center',
   },
   otpText: {
-    fontSize: 14,
+    fontSize: wp(4), // Responsive font size
     color: '#000',
     textAlign: 'center',
-    marginBottom: 15,
-    marginRight:"5%",
-  },
-  otpWord: {
-    color: '#E67E00',
-    fontWeight: 'bold',
+    marginBottom: hp(2), // Responsive margin bottom
+    marginRight: wp(5), // Responsive margin
   },
   button: {
-    marginTop: 30,
+    marginTop: hp(3), // Responsive margin top
     width: '50%',
-    backgroundColor: '#E67E00',
-    borderRadius: 8,
+    backgroundColor: '#E3963E',
+    borderRadius: wp(2), // Responsive border radius
     alignItems: 'center',
-    paddingVertical: 12,
+    paddingVertical: hp(2), // Responsive padding
+    alignSelf: 'center',
   },
   buttonText: {
     color: '#fff',
-    fontSize: 14,
+    fontSize: wp(4), // Responsive font size
     fontWeight: 'normal',
   },
 });

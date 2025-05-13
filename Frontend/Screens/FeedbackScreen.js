@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image } from 'react-native';
+import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen'; // Responsive screen utility
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'; // Keyboard awareness
 import Header from '../Shared/Header';
 
 const FeedbackScreen = ({ navigation }) => {
@@ -11,7 +13,7 @@ const FeedbackScreen = ({ navigation }) => {
   };
 
   return (
-    <View style={styles.container}>
+    <KeyboardAwareScrollView contentContainerStyle={styles.container} enableOnAndroid>
       <Header 
         navigation={navigation} 
         title="Feedback" 
@@ -47,7 +49,7 @@ const FeedbackScreen = ({ navigation }) => {
           <Text style={styles.submitText}>Submit</Text>
         </TouchableOpacity>
       </View>
-    </View>
+    </KeyboardAwareScrollView>
   );
 };
 
@@ -55,70 +57,70 @@ export default FeedbackScreen;
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    flexGrow: 1,
     backgroundColor: '#f1f2f6',
-    paddingTop: 50,
+    paddingTop: hp(5), // Responsive padding
   },
   image: {
     width: '100%',
-    height: 220,
-    marginBottom: 20,
+    height: hp(25), // Responsive height
+    marginBottom: hp(3), // Responsive margin
   },
   formContainer: {
     backgroundColor: '#fff',
-    borderTopLeftRadius: 30,
-    borderTopRightRadius: 30,
-    paddingHorizontal: 30,
-    paddingVertical: 35,
+    borderTopLeftRadius: wp(7), // Responsive border radius
+    borderTopRightRadius: wp(7), // Responsive border radius
+    paddingHorizontal: wp(7), // Responsive padding
+    paddingVertical: hp(4), // Responsive padding
     flex: 1,
   },
   // Title container with lines on both sides
   titleContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 25,
+    marginBottom: hp(3), // Responsive margin
     justifyContent: 'center',
   },
   line: {
-    width: '20%',  // Shortened line width
-    height: 1,     // Thickness of the line
-    backgroundColor: '#579A4E', // Line color
-    marginHorizontal: 10, // Space between the line and title text
+    width: '20%',  // Shortened line width for responsive design
+    height: hp(0.3), // Line height adjusted for responsiveness
+    backgroundColor: '#097969', // Line color
+    marginHorizontal: wp(3), // Responsive space between the line and title text
   },
   title: {
-    fontSize: 24,
+    fontSize: wp(6), // Responsive font size
     color: '#f39c12',
     fontWeight: 'bold',
     textAlign: 'center',
   },
   subtitle: {
-    fontSize: 16,
+    fontSize: wp(4), // Responsive font size
     color: '#2d3436',
     textAlign: 'center',
-    marginBottom: 30,
+    marginBottom: hp(4), // Responsive margin
   },
   textInput: {
-    height: 140,
+    height: hp(18), // Responsive height for text input
     borderColor: '#dfe6e9',
     borderWidth: 1,
-    borderRadius: 12,
-    padding: 16,
+    borderRadius: wp(3), // Responsive border radius
+    padding: wp(4), // Responsive padding
     textAlignVertical: 'top',
     backgroundColor: '#fff',
-    marginBottom: 30,
+    marginBottom: hp(4), // Responsive margin
   },
   submitButton: {
-    backgroundColor: '#E67E00',
-    padding: 12,
-    borderRadius: 10,
+    marginTop: hp(5), // Responsive margin top
+    width: '50%',
+    backgroundColor: '#E3963E',
+    borderRadius: wp(2), // Responsive border radius
     alignItems: 'center',
-    width: '60%',
-    alignSelf: 'center',
-    marginTop: 10,
+    alignSelf:'center',
+    paddingVertical: hp(2), // Responsive padding
   },
   submitText: {
     color: '#fff',
     fontWeight: '600',
-    fontSize: 16,
+    fontSize: wp(4), // Responsive font size
   },
 });

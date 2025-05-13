@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import {
-  ScrollView,
   Text,
   View,
   TextInput,
@@ -9,6 +8,8 @@ import {
   Image,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 
 const LoginScreen = ({ navigation }) => {
   const [email, setEmail] = useState('');
@@ -47,14 +48,14 @@ const LoginScreen = ({ navigation }) => {
   };
 
   return (
-    <ScrollView contentContainerStyle={styles.container}>
-      {/* Logo */}
+    <KeyboardAwareScrollView
+      contentContainerStyle={styles.container}
+      keyboardShouldPersistTaps="handled"
+    >
       <Image source={require('../assets/Images/logo.png')} style={styles.logo} />
 
-      {/* Show error message if exists */}
       {error ? <Text style={styles.errorText}>{error}</Text> : null}
 
-      {/* Email Input */}
       <View style={styles.inputContainer}>
         <Icon name="envelope" size={20} color="#aaa" style={styles.icon} />
         <TextInput
@@ -67,7 +68,6 @@ const LoginScreen = ({ navigation }) => {
         />
       </View>
 
-      {/* Password Input */}
       <View style={styles.inputContainer}>
         <Icon name="lock" size={20} color="#aaa" style={styles.icon} />
         <TextInput
@@ -79,12 +79,10 @@ const LoginScreen = ({ navigation }) => {
         />
       </View>
 
-      {/* Forgot Password */}
       <TouchableOpacity onPress={handleForgotPassword}>
         <Text style={styles.forgotText}>Forgot Password?</Text>
       </TouchableOpacity>
 
-      {/* Sign Up Section */}
       <View style={styles.signupContainer}>
         <Text style={styles.signupText}>Don't have an account?</Text>
         <TouchableOpacity onPress={handleSignUp}>
@@ -92,11 +90,10 @@ const LoginScreen = ({ navigation }) => {
         </TouchableOpacity>
       </View>
 
-      {/* Login Button */}
       <TouchableOpacity style={styles.loginButton} onPress={handleLogin}>
         <Text style={styles.loginButtonText}>Login</Text>
       </TouchableOpacity>
-    </ScrollView>
+    </KeyboardAwareScrollView>
   );
 };
 
@@ -106,69 +103,70 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     justifyContent: 'center',
     alignItems: 'center',
-    padding: 20,
+    padding: wp(5), // Responsive padding
   },
   logo: {
-    width: 250,
-    height: 250,
-    marginBottom: 20,
+    width: wp(60), // Responsive width
+    height: wp(60), // Responsive height
+    marginBottom: hp(3), // Responsive margin
     resizeMode: 'contain',
   },
-  // errorText: {
-  //   color: 'red',
-  //   marginBottom: 10,
-  //   fontSize: 14,
-  //   fontWeight: '500',
-  // },
+  errorText: {
+    color: 'red',
+    marginBottom: hp(2),
+    fontSize: wp(3.5),
+    fontWeight: '500',
+  },
   inputContainer: {
     flexDirection: 'row',
     alignItems: 'center',
     borderWidth: 1,
     borderColor: '#ddd',
     borderRadius: 8,
-    paddingHorizontal: 10,
-    marginVertical: 10,
+    paddingHorizontal: wp(5), // Responsive padding
+    marginVertical: hp(2), // Responsive margin
     width: '100%',
   },
   icon: {
-    marginRight: 10,
+    marginRight: wp(2), // Responsive icon margin
   },
   input: {
     flex: 1,
-    height: 45,
+    height: hp(6), // Responsive height
+    fontSize: wp(3.8), // Responsive font size
   },
   forgotText: {
     alignSelf: 'flex-end',
-    marginTop: 5,
-    color: '#7ac943',
-    fontSize: 13,
+    marginTop: hp(1),
+    color: '#097969',
+    fontSize: wp(3.5),
   },
   signupContainer: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    marginTop: 20,
+    marginTop: hp(2),
   },
   signupText: {
     color: '#555',
-    fontSize: 12,
+    fontSize: wp(3.5),
   },
   signupLink: {
-    color: '#7ac943',
-    fontSize: 13,
+    color: '#097969',
+    fontSize: wp(3.5),
     fontWeight: 'bold',
   },
   loginButton: {
-    marginTop: 30,
-    width: '50%',
-    backgroundColor: '#E67E00',
+    marginTop: hp(5), // Responsive margin
+    width: wp(50), // Responsive width
+    backgroundColor: '#E3963E',
     borderRadius: 8,
     alignItems: 'center',
-    paddingVertical: 12,
+    paddingVertical: hp(2), // Responsive padding
   },
   loginButtonText: {
     color: '#fff',
-    fontSize: 14,
+    fontSize: wp(4), // Responsive font size
     fontWeight: 'normal',
   },
 });

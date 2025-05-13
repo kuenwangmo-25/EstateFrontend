@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import {
-  ScrollView,
   Text,
   TouchableOpacity,
   StyleSheet,
@@ -8,10 +7,13 @@ import {
   View,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
+import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen'; // Responsive screen utility
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'; // Keyboard awareness
 import FormContainer from '../Shared/FormContainer';
 import Input from '../Shared/Input';
+import Header from '../Shared/Header';
 
-const FogotPassword = ({ navigation }) => {
+const ForgotPassword = ({ navigation }) => {
   const [email, setEmail] = useState('');
   const [error, setError] = useState('');
 
@@ -26,11 +28,17 @@ const FogotPassword = ({ navigation }) => {
   };
 
   return (
-    <ScrollView contentContainerStyle={styles.container}>
+    <KeyboardAwareScrollView contentContainerStyle={styles.container} >
+      <Header
+        navigation={navigation}  // Pass navigation prop for the back button functionality
+      />
       <Image source={require('../assets/Images/logo.png')} style={styles.logo} />
 
       <Text style={styles.infoText}>
-        Make sure your email is already registered in the Estate admin system
+        Make sure your email is already registered in the
+      </Text>
+      <Text style={styles.infoText}>
+        Estate admin system
       </Text>
 
       <FormContainer style={styles.formContainer}>
@@ -41,7 +49,7 @@ const FogotPassword = ({ navigation }) => {
           value={email}
           onChangeText={(text) => setEmail(text.toLowerCase())}
           keyboardType="email-address"
-          icon={<Icon name="envelope" size={20} color="#aaa" />}
+          icon={<Icon name="envelope" size={wp(5)} color="#aaa" />}
           containerStyle={styles.inputContainer}
           inputStyle={styles.input}
         />
@@ -52,7 +60,7 @@ const FogotPassword = ({ navigation }) => {
           </TouchableOpacity>
         </View>
       </FormContainer>
-    </ScrollView>
+    </KeyboardAwareScrollView>
   );
 };
 
@@ -61,63 +69,63 @@ const styles = StyleSheet.create({
     flexGrow: 1,
     backgroundColor: '#fff',
     alignItems: 'center',
-    padding: 16,
+    padding: wp(4), // Responsive padding
   },
   logo: {
-    width: 200,
-    height: 200,
-    marginTop: 40,
-    marginBottom: 20,
+    width: wp(50), // Responsive width
+    height: wp(50), // Responsive height
+    marginTop: hp(5), // Responsive top margin
+    marginBottom: hp(3), // Responsive bottom margin
     resizeMode: 'contain',
   },
   infoText: {
     textAlign: 'center',
-    marginVertical: 5,
-    fontSize: 14,
+    marginVertical: hp(1), // Reduced vertical margin for responsiveness
+    fontSize: wp(4), // Responsive font size
     color: '#333',
-    marginHorizontal: '1%',
+    marginRight: wp(10), // Responsive margin
   },
   formContainer: {
     width: '100%',
   },
-  // errorText: {
-  //   marginBottom: 12,
-  //   fontSize: 16,
-  //   alignSelf: 'center',
-  // },
   inputContainer: {
     flexDirection: 'row',
     alignItems: 'center',
     borderWidth: 1,
     borderColor: '#ddd',
-    borderRadius: 8,
-    paddingHorizontal: 10,
-    marginVertical: 10,
+    borderRadius: wp(2), // Responsive border radius
+    paddingHorizontal: wp(6), // Responsive horizontal padding
+    marginVertical: hp(2), // Responsive vertical margin
     width: '90%',
   },
+
   input: {
     flex: 1,
-    fontSize: 16,
-    color: '#333',
+    height: hp(6), // Responsive height for input field
   },
   buttonContainer: {
     alignItems: 'center',
-    marginTop: 30,
-  
+    marginTop: hp(3), // Responsive margin
   },
   button: {
-    marginTop: 30,
     width: '50%',
-    backgroundColor: '#E67E00',
-    borderRadius: 8,
+    backgroundColor: '#E3963E',
+    borderRadius: wp(2), // Responsive border radius
     alignItems: 'center',
-    paddingVertical: 12,
+    alignSelf: 'center',
+    paddingVertical: hp(2), // Responsive padding
   },
   buttonText: {
     color: '#fff',
-    fontSize: 14,
+    fontSize: wp(4), // Responsive font size
     fontWeight: 'normal',
+  },
+  errorText: {
+    marginBottom: hp(2),
+    fontSize: wp(4), // Responsive font size for error message
+    color: 'red',
+    textAlign: 'center',
   },
 });
 
-export default FogotPassword;
+export default ForgotPassword;

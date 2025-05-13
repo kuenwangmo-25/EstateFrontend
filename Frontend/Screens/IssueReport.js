@@ -4,12 +4,13 @@ import {
   Image, StyleSheet, Modal
 } from "react-native";
 import DropDownPicker from "react-native-dropdown-picker";
-import DatePicker from "react-native-date-picker";
-import * as ImagePicker from "react-native-image-picker";
-import ImageResizer from "react-native-image-resizer";
+import DateTimePicker from "@react-native-community/datetimepicker";
+import * as ImagePicker from "expo-image-picker";
+import * as ImageManipulator from "expo-image-manipulator";
 import { Button } from "react-native-paper";
 import Icon from "react-native-vector-icons/FontAwesome";
 import Header from '../Shared/Header';
+import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 
 const IssueReport = ({ navigation }) => {
   const [location, setLocation] = useState("");
@@ -28,24 +29,34 @@ const IssueReport = ({ navigation }) => {
     { label: "Cleaning", value: "Cleaning" },
   ]);
 
-  const handleImagePick = () => {
-    ImagePicker.launchImageLibrary({ mediaType: "photo" }, async (response) => {
-      if (response.assets) {
-        const imageUri = response.assets[0].uri;
-        try {
-          const resizedImage = await ImageResizer.createResizedImage(imageUri, 100, 100, 'JPEG', 80);
-          setImage(resizedImage.uri);
-        } catch (error) {
-          console.error("Image resizing failed:", error);
-        }
-      }
+  const handleImagePick = async () => {
+    const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    if (!permissionResult.granted) {
+      alert('Permission to access camera roll is required!');
+      return;
+    }
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      aspect: [4, 3],
+      quality: 1,
     });
+    if (!result.canceled) {
+      const manipulatedImage = await ImageManipulator.manipulateAsync(
+        result.assets[0].uri,
+        [{ resize: { width: 100, height: 100 } }],
+        { compress: 0.8, format: ImageManipulator.SaveFormat.JPEG }
+      );
+      setImage(manipulatedImage.uri);
+    }
   };
 
   const handleSubmit = () => {
     console.log("Issue Submitted:", { location, contact, category, date, description, image });
     navigation.goBack();
   };
+
+  const formattedDate = `${date.toLocaleString('default', { month: 'long' })} ${date.getDate()}`;
 
   return (
     <View style={styles.container}>
@@ -55,8 +66,8 @@ const IssueReport = ({ navigation }) => {
         style={styles.issueListButton}
         onPress={() => navigation.navigate('IssueList')}
       >
-        <Icon name="exclamation-circle" size={20} color="#579A4E" />
-        <Text style={styles.issueListText}>Issue List</Text>
+        <Icon name="exclamation-circle" size={20} color="#097969" />
+        <Text style={styles.issueListText}>IssueList</Text>
       </TouchableOpacity>
 
       <Image
@@ -99,32 +110,34 @@ const IssueReport = ({ navigation }) => {
 
         <View style={styles.dateContainer}>
           <Text style={styles.dateText}>Date to avail our services:</Text>
-          <TouchableOpacity onPress={() => setShowDatePicker(true)} style={styles.datePickerButton}>
-            <Icon name="calendar" size={25} color="#7ac943" />
+          <TouchableOpacity
+            onPress={() => setShowDatePicker(true)}
+            style={styles.dateBox}
+          >
+            <Text style={styles.dateTextDisplay}>{formattedDate}</Text>
+            <Icon name="calendar" size={20} color="#7ac943" />
           </TouchableOpacity>
         </View>
-        <Text style={{ marginBottom: 10, color: "#333" }}>{date.toDateString()}</Text>
 
-        <Modal visible={showDatePicker} transparent animationType="slide">
-          <View style={styles.pickerWrapper}>
-            <View style={styles.pickerInner}>
-              <DatePicker
-                date={date}
-                mode="date"
-                onDateChange={setDate}
-              />
-              <Button mode="contained" onPress={() => setShowDatePicker(false)} style={styles.closeBtn}>
-                Done
-              </Button>
-            </View>
-          </View>
-        </Modal>
+        {showDatePicker && (
+          <DateTimePicker
+            value={date}
+            mode="date"
+            display="default"
+            onChange={(event, selectedDate) => {
+              if (event.type === 'set' && selectedDate) {
+                setDate(selectedDate);
+              }
+              setShowDatePicker(false);
+            }}
+          />
+        )}
 
         <TextInput
           placeholder="Description"
           multiline
-          numberOfLines={4}
-          style={styles.input}
+          numberOfLines={6}
+          style={[styles.input, { height: hp('8%') }]}
           value={description}
           onChangeText={setDescription}
         />
@@ -154,7 +167,7 @@ const IssueReport = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 20,
+    padding: wp('10%'),
     backgroundColor: "#f8f9fa",
   },
   borderedContainer: {
@@ -162,34 +175,34 @@ const styles = StyleSheet.create({
     borderColor: '#ccc',
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
-    padding: 15,
+    padding: wp('5%'),
     backgroundColor: '#FFFFFF',
     flex: 1,
   },
   issueHeaderContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 20,
+    marginBottom: hp('2%'),
   },
   line: {
-    width: '20%',  // Set the width of the line to be shorter
-    height: 2,  // Thickness of the line
-    backgroundColor: '#579A4E',  // Line color
-    marginHorizontal: 10,
+    width: '20%',
+    height: 3,
+    backgroundColor: '#097969',
+    marginHorizontal: wp('2%'),
   },
   header: {
-    fontSize: 22,
+    fontSize: wp('5.5%'),
     fontWeight: "bold",
     textAlign: "center",
-    color: "#E67E00",
-    marginHorizontal: 10,
+    color: "#E3963E",
+    marginHorizontal: wp('2%'),
   },
   input: {
     borderWidth: 1,
     borderColor: "#ccc",
-    padding: 10,
+    padding: wp('3.5%'),
     borderRadius: 8,
-    marginBottom: 15,
+    marginBottom: hp('2%'),
     backgroundColor: "#fff",
     color: "#333",
   },
@@ -198,7 +211,7 @@ const styles = StyleSheet.create({
     borderColor: "#ccc",
     borderRadius: 8,
     backgroundColor: "#fff",
-    marginBottom: 15,
+    marginBottom: hp('2%'),
   },
   dropdownContainer: {
     backgroundColor: "#fff",
@@ -207,79 +220,71 @@ const styles = StyleSheet.create({
   dateContainer: {
     flexDirection: "row",
     alignItems: "center",
-    marginBottom: 15,
-    justifyContent: "flex-start",
-  },
-  datePickerButton: {
-    flexDirection: "row",
-    alignItems: "center",
-    borderWidth: 1,
-    borderColor: "#ccc",
-    padding: 10,
-    borderRadius: 8,
-    backgroundColor: "#fff",
-    marginLeft: 10,
+    justifyContent: "space-between",
+    marginBottom: hp('2%'),
   },
   dateText: {
-    fontSize: 16,
-    fontWeight: 'normal',
+    fontSize: wp('4%'),
     color: "#333",
+    flex: 1,
+  },
+  dateBox: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    padding: wp('3.5%'),
+    borderWidth: 1,
+    borderColor: "#ccc",
+    borderRadius: 8,
+    backgroundColor: "#fff",
+    width: wp('40%'),
+    marginLeft: wp('2%'),
+  },
+  dateTextDisplay: {
+    fontSize: wp('3.5%'),
+    color: "#333",
+    marginRight: wp('2%'),
   },
   image: {
-    marginVertical: 10,
+    marginVertical: hp('1.5%'),
     alignSelf: "center",
-    width: 60,
-    height: 60,
+    width: wp('20%'),
+    height: wp('20%'),
   },
   uploadImageButton: {
-    marginTop: 10,
-    paddingVertical: 5,
-    width: '40%',
+    marginTop: hp('1%'),
+    paddingVertical: hp('1%'),
+    width: wp('40%'),
     alignSelf: 'flex-start',
   },
   submitButton: {
-    backgroundColor: '#E67E00',
-    padding: 12,
-    borderRadius: 10,
+    backgroundColor: '#E3963E',
+    padding: hp('1%'),
+    borderRadius: 8,
     alignItems: "center",
-    width: "50%",
+    width: wp('50%'),
     alignSelf: "center",
-    marginTop: 10,
+    marginTop: hp('4%'),
   },
   img: {
-    width: 350,
-    height: 250,
+    width: wp('90%'),
+    height: hp('20%'),
     resizeMode: 'contain',
-    marginBottom: 20,
-    alignItems: 'center',
-  },
-  pickerWrapper: {
-    flex: 1,
-    justifyContent: 'flex-end',
-    backgroundColor: 'rgba(0,0,0,0.5)',
-  },
-  pickerInner: {
-    backgroundColor: '#fff',
-    padding: 20,
-    borderTopLeftRadius: 15,
-    borderTopRightRadius: 15,
-  },
-  closeBtn: {
-    marginTop: 10,
-    backgroundColor: '#579A4E',
+    marginBottom: hp('2.5%'),
+    alignSelf: 'center',
   },
   issueListButton: {
     position: 'absolute',
-    top: 50,
-    right: 20,
+    top: hp('6%'),
+    right: wp('5%'),
     flexDirection: 'row',
     alignItems: 'center',
-    padding: 5,
+    padding: wp('1%'),
   },
   issueListText: {
-    marginLeft: 5,
-    fontSize: 20,
-    color: '#579A4E',
+    marginLeft: wp('2%'),
+    fontSize: wp('5%'),
+    color: '#097969',
   },
 });
 
