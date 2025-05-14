@@ -32,9 +32,7 @@ const ProfileScreen = ({ navigation }) => {
                 headers: { Authorization: `Bearer ${res}` },
               })
                 .then((user) => {
-                  console.log("USER DATA:", user.data);
-                  setUserProfile(user.data);}) 
-               .catch((err) => console.log(err));
+                  setUserProfile(user.data);})              .catch((err) => console.log(err));
           }
         })
         .catch((error) => console.log(error));

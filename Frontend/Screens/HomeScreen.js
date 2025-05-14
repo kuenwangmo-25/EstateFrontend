@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect, useContext } from 'react';
 import {
   View,
   Text,
@@ -10,11 +10,37 @@ import {
 } from "react-native";
 import Icon from "react-native-vector-icons/FontAwesome";
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from "react-native-responsive-screen";
-
+import axios from "axios";
+import baseURL from "../assets/common/baseUrl";
+import AuthGlobal from "../Context/store/AuthGlobal";
 // Get screen dimensions
 const { width, height } = Dimensions.get("window");
 
 const HomeScreen = ({ navigation }) => {
+  const context = useContext(AuthGlobal);
+
+  const [notificationCount, setNotificationCount] = useState(0);
+  const userId = context?.stateUser?.user?.id;
+
+    useEffect(() => {
+      const fetchUnseenCount = async () => {
+        try {
+          const response = await axios.get(`${baseURL}/remarks/unseen/${userId}`);
+          console.log(response)
+          const unseen = response.data.unseenCount || 0;
+          setNotificationCount(unseen);
+        } catch (error) {
+          console.error("Error fetching unseen remark count:", error);
+          setNotificationCount(0);
+        }
+      };
+
+      fetchUnseenCount(); // Initial
+      const interval = setInterval(fetchUnseenCount, 30000); // Every 30s
+
+      return () => clearInterval(interval); // Cleanup
+      }, [userId]);
+
   return (
     <View style={styles.container}>
       <ImageBackground
@@ -60,11 +86,16 @@ const HomeScreen = ({ navigation }) => {
           </Text>
 
           <View style={styles.actions}>
-            <TouchableOpacity
+             <TouchableOpacity
               style={styles.actionItem}
               onPress={() => navigation.navigate("Notification")}
             >
               <Icon name="bell" size={wp(7)} color="#E3963E" />
+                {notificationCount > 0 && (
+                  <View style={styles.badge}>
+                    <Text style={styles.badgeText}>{notificationCount}</Text>
+                  </View>
+                )}
               <Text style={styles.actionText}>Notification</Text>
             </TouchableOpacity>
 
@@ -221,6 +252,26 @@ const styles = StyleSheet.create({
     color: "#ffffff",
     fontWeight: "bold",
   },
+  badge: {
+  position: 'absolute',
+  top: -5,
+  right: -5,
+  backgroundColor: 'red',
+  borderRadius: wp(4),
+  minWidth: wp(5),
+  height: wp(5),
+  justifyContent: 'center',
+  alignItems: 'center',
+  paddingHorizontal: 2,
+  zIndex: 10,
+},
+badgeText: {
+  color: 'white',
+  fontSize: wp(2.5),
+  fontWeight: 'bold',
+},
+
+
 });
 
 export default HomeScreen;
