@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, FlatList, TouchableOpacity, StyleSheet, ScrollView } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import Header1 from '../Shared/Header1'; // ✅ Make sure this has a search input and passes onSearch
+import Header1 from '../Shared/Header1';
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 
 const issues = [
@@ -12,7 +12,6 @@ const issues = [
   { id: '5', category: 'Electric', title: 'Switch not working', date: '24/09/2024' },
 ];
 
-// Grouping helper
 const groupByDate = (data) => {
   return data.reduce((groups, item) => {
     const { date } = item;
@@ -27,7 +26,7 @@ const groupByDate = (data) => {
 export default function IssueListScreen({ navigation }) {
   const [searchQuery, setSearchQuery] = useState('');
 
-  // ✅ Filter issues by title, category, and date
+ 
   const filteredIssues = issues.filter((issue) => {
     const query = searchQuery.toLowerCase();
     return (
@@ -96,7 +95,7 @@ const styles = StyleSheet.create({
   container: { 
     flex: 1, 
     padding: wp(4),
-    paddingTop: hp(8),  // Adding top padding to ensure header doesn't overlap content
+    paddingTop: hp(8),  
     backgroundColor: '#f1f2f6',  
   },
   card: {

@@ -71,19 +71,19 @@ const styles = StyleSheet.create({
     flexGrow: 1,
     backgroundColor: '#fff',
     alignItems: 'center',
-    padding: wp(4), // Responsive padding
+    padding: wp(4), 
   },
   logo: {
-    width: wp(50), // Responsive width for the logo
-    height: wp(50), // Responsive height for the logo
-    marginTop: hp(5), // Responsive margin
-    marginBottom: hp(3), // Responsive margin
+    width: wp(50), 
+    height: wp(50), 
+    marginTop: hp(5), 
+    marginBottom: hp(3), 
     resizeMode: 'contain',
   },
   infoText: {
     textAlign: 'center',
-    marginVertical: hp(1), // Responsive vertical margin
-    fontSize: wp(4), // Responsive font size
+    marginVertical: hp(1), 
+    fontSize: wp(4),
     color: '#333',
     marginRight: "10%",
   },
@@ -96,29 +96,29 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#ddd',
     borderRadius: 8,
-    paddingHorizontal: wp(5), // Responsive padding
-    marginVertical: hp(2), // Responsive vertical margin
+    paddingHorizontal: wp(5), 
+    marginVertical: hp(2), 
     width: '90%',
   },
   input: {
     flex: 1,
-    height: hp(6), // Responsive height for the input
+    height: hp(6), 
   },
   buttonContainer: {
     alignItems: 'center',
-    marginTop: hp(5), // Responsive margin top
+    marginTop: hp(5), 
   },
   button: {
-    marginTop: hp(4), // Responsive margin top
-    width: wp(60), // Responsive width for the button
-    backgroundColor: '#E3963E', // Change to your desired color
+    marginTop: hp(4),
+    width: wp(60), 
+    backgroundColor: '#E3963E', 
     borderRadius: 8,
     alignItems: 'center',
-    paddingVertical: hp(2), // Responsive padding for button
+    paddingVertical: hp(2), 
   },
   buttonText: {
     color: '#fff',
-    fontSize: wp(5), // Responsive font size
+    fontSize: wp(5), 
     fontWeight: 'normal',
   },
 });

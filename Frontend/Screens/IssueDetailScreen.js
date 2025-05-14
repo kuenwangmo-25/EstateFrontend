@@ -65,60 +65,60 @@ const styles = StyleSheet.create({
   screen: {
     flex: 1,
     backgroundColor: '#F5F5F5',
-    paddingBottom: hp(3), // Adds some padding at the bottom for better scroll experience
+    paddingBottom: hp(3),
   },
   image: {
     width: '100%',
-    height: hp(40), // Responsive height for image
-    marginBottom: hp(2), // Responsive margin below the image
+    height: hp(40), 
+    marginBottom: hp(2), 
   },
   card: {
     backgroundColor: '#fff',
     padding: wp(3),  
     borderRadius: 8,
     elevation: 3,  
-    marginBottom: wp(1),// Pull the card upwards slightly to overlay over the image
+    marginBottom: wp(1),
   },
   categoryContainer: {
     width: '100%',
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    marginBottom: hp(7), // Responsive margin
+    marginBottom: hp(7), 
   },
   line: {
     width: '20%',
     height: 3,
     backgroundColor: '#097969',
-    marginHorizontal: wp(2), // Responsive margin
+    marginHorizontal: wp(2),
   },
   categoryText: {
     color: '#E3963E',
     fontWeight: 'bold',
-    fontSize: wp(7), // Responsive font size
+    fontSize: wp(7),
   },
   detailRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginBottom: hp(2), // Responsive margin between rows
+    marginBottom: hp(2), 
     alignItems: 'center',
   },
   label: {
     fontWeight: 'bold',
     color: '#555',
-    fontSize: wp(4.5), // Responsive font size
+    fontSize: wp(4.5), 
     marginBottom: hp(0.5),
     width: '40%',
   },
   value: {
-    fontSize: wp(4), // Responsive font size
+    fontSize: wp(4),
     color: '#333',
     width: '60%',
   },
   imagePreviewContainer: {
     width: '100%',
-    height: hp(20), // Responsive height for image preview container
-    marginVertical: hp(2), // Responsive margin
+    height: hp(20), 
+    marginVertical: hp(2), 
     borderRadius: 8,
     overflow: 'hidden',
     alignItems: 'center',

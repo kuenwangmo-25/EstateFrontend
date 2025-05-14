@@ -1,7 +1,7 @@
 import React from 'react';
 import { ScrollView, Text, TouchableOpacity, StyleSheet, Image, View } from 'react-native';
-import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen'; // Responsive screen utility
-import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'; // Import KeyboardAwareScrollView
+import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen'; 
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'; 
 import FormContainer from '../Shared/FormContainer';
 import Header from '../Shared/Header';
 
@@ -9,10 +9,10 @@ const DefaultPassword = ({ navigation }) => {
   return (
     <KeyboardAwareScrollView
       contentContainerStyle={styles.container}
-      keyboardShouldPersistTaps="handled" // Ensures tapping outside the keyboard closes it
+      keyboardShouldPersistTaps="handled" 
     >
       <Header
-        navigation={navigation}  // Pass navigation prop for the back button functionality
+        navigation={navigation}  
       />
       <Image source={require('../assets/Images/logo.png')} style={styles.logo} />
 
@@ -47,53 +47,53 @@ const styles = StyleSheet.create({
     flexGrow: 1,
     backgroundColor: '#FFFFFF',
     alignItems: 'center',
-    padding: wp(5), // Responsive padding
-    marginTop: hp(2), // Responsive margin top
+    padding: wp(5), 
+    marginTop: hp(2), 
   },
   logo: {
-    width: wp(50),  // Responsive width for logo
-    height: wp(50), // Responsive height for logo
-    marginBottom: hp(2), // Responsive margin bottom
-    marginTop: hp(5), // Responsive margin top
+    width: wp(50),  
+    height: wp(50), 
+    marginBottom: hp(2), 
+    marginTop: hp(5), 
     resizeMode: 'contain',
   },
   infoText: {
     textAlign: 'center',
-    marginVertical: hp(1), // Reduced vertical margin to bring text closer
-    fontSize: wp(4),  // Responsive font size
+    marginVertical: hp(1), 
+    fontSize: wp(4), 
     color: '#333',
-    marginRight: wp(10), // Responsive margin
+    marginRight: wp(10), 
   },
   otpBox: {
     width: '90%',
-    height: hp(30), // Responsive height
-    padding: wp(5), // Responsive padding
+    height: hp(30), 
+    padding: wp(5), 
     backgroundColor: '#EFEFEF',
-    borderRadius: wp(2), // Responsive border radius
-    marginTop: hp(3), // Responsive margin top
-    marginBottom: hp(3), // Responsive margin bottom
+    borderRadius: wp(2), 
+    marginTop: hp(3), 
+    marginBottom: hp(3), 
     alignItems: 'center',
     justifyContent: 'center',
   },
   otpText: {
-    fontSize: wp(4), // Responsive font size
+    fontSize: wp(4), 
     color: '#000',
     textAlign: 'center',
-    marginBottom: hp(2), // Responsive margin bottom
-    marginRight: wp(5), // Responsive margin
+    marginBottom: hp(2), 
+    marginRight: wp(5), 
   },
   button: {
-    marginTop: hp(3), // Responsive margin top
+    marginTop: hp(3), 
     width: '50%',
     backgroundColor: '#E3963E',
-    borderRadius: wp(2), // Responsive border radius
+    borderRadius: wp(2), 
     alignItems: 'center',
-    paddingVertical: hp(2), // Responsive padding
+    paddingVertical: hp(2),
     alignSelf: 'center',
   },
   buttonText: {
     color: '#fff',
-    fontSize: wp(4), // Responsive font size
+    fontSize: wp(4),
     fontWeight: 'normal',
   },
 });

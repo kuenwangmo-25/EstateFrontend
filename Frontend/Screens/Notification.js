@@ -19,7 +19,7 @@ const notifications = [
 const NotificationScreen = ({ navigation }) => {
   const [searchQuery, setSearchQuery] = useState('');
 
-  // Filter notifications by title and date
+  
   const filteredNotifications = notifications.filter((notification) => {
     const query = searchQuery.toLowerCase();
     return (
@@ -70,7 +70,7 @@ const styles = StyleSheet.create({
   },
  
   scrollViewContainer: {
-    flex: 1,  // Ensures the ScrollView fills the available space
+    flex: 1,  
     marginTop: hp(15),
   },
   notificationList: {

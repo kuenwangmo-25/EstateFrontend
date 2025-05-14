@@ -8,6 +8,7 @@ import {
   Image,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
+import Feather from 'react-native-vector-icons/Feather';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 
@@ -15,6 +16,7 @@ const LoginScreen = ({ navigation }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const [showPassword, setShowPassword] = useState(false); 
 
   const validateEmail = (email) => {
     const regex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
@@ -75,8 +77,14 @@ const LoginScreen = ({ navigation }) => {
           value={password}
           onChangeText={(text) => setPassword(text)}
           style={styles.input}
-          secureTextEntry
+          secureTextEntry={!showPassword}
         />
+        <TouchableOpacity
+          style={styles.eyeIcon}
+          onPress={() => setShowPassword(!showPassword)} 
+        >
+          <Feather name={showPassword ? 'eye' : 'eye-off'} size={20} color="#aaa" />
+        </TouchableOpacity>
       </View>
 
       <TouchableOpacity onPress={handleForgotPassword}>
@@ -103,12 +111,12 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     justifyContent: 'center',
     alignItems: 'center',
-    padding: wp(5), // Responsive padding
+    padding: wp(5), 
   },
   logo: {
-    width: wp(60), // Responsive width
-    height: wp(60), // Responsive height
-    marginBottom: hp(3), // Responsive margin
+    width: wp(60), 
+    height: wp(60), 
+    marginBottom: hp(3), 
     resizeMode: 'contain',
   },
   errorText: {
@@ -123,17 +131,21 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#ddd',
     borderRadius: 8,
-    paddingHorizontal: wp(5), // Responsive padding
-    marginVertical: hp(2), // Responsive margin
+    paddingHorizontal: wp(5), 
+    marginVertical: hp(2), 
     width: '100%',
   },
   icon: {
-    marginRight: wp(2), // Responsive icon margin
+    marginRight: wp(2),
   },
   input: {
     flex: 1,
-    height: hp(6), // Responsive height
-    fontSize: wp(3.8), // Responsive font size
+    height: hp(6), 
+    fontSize: wp(3.8), 
+  },
+  eyeIcon: {
+    position: 'absolute',
+    right: wp(3),
   },
   forgotText: {
     alignSelf: 'flex-end',
@@ -157,16 +169,16 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   loginButton: {
-    marginTop: hp(5), // Responsive margin
-    width: wp(50), // Responsive width
+    marginTop: hp(5), 
+    width: wp(50),
     backgroundColor: '#E3963E',
     borderRadius: 8,
     alignItems: 'center',
-    paddingVertical: hp(2), // Responsive padding
+    paddingVertical: hp(2), 
   },
   loginButtonText: {
     color: '#fff',
-    fontSize: wp(4), // Responsive font size
+    fontSize: wp(4), 
     fontWeight: 'normal',
   },
 });

@@ -7,8 +7,8 @@ import {
   View,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
-import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen'; // Responsive screen utility
-import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'; // Keyboard awareness
+import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen'; 
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'; 
 import FormContainer from '../Shared/FormContainer';
 import Input from '../Shared/Input';
 import Header from '../Shared/Header';
@@ -30,7 +30,7 @@ const ForgotPassword = ({ navigation }) => {
   return (
     <KeyboardAwareScrollView contentContainerStyle={styles.container} >
       <Header
-        navigation={navigation}  // Pass navigation prop for the back button functionality
+        navigation={navigation}  
       />
       <Image source={require('../assets/Images/logo.png')} style={styles.logo} />
 
@@ -69,21 +69,21 @@ const styles = StyleSheet.create({
     flexGrow: 1,
     backgroundColor: '#fff',
     alignItems: 'center',
-    padding: wp(4), // Responsive padding
+    padding: wp(4), 
   },
   logo: {
-    width: wp(50), // Responsive width
-    height: wp(50), // Responsive height
-    marginTop: hp(5), // Responsive top margin
-    marginBottom: hp(3), // Responsive bottom margin
+    width: wp(50), 
+    height: wp(50), 
+    marginTop: hp(5), 
+    marginBottom: hp(3), 
     resizeMode: 'contain',
   },
   infoText: {
     textAlign: 'center',
-    marginVertical: hp(1), // Reduced vertical margin for responsiveness
-    fontSize: wp(4), // Responsive font size
+    marginVertical: hp(1),
+    fontSize: wp(4),
     color: '#333',
-    marginRight: wp(10), // Responsive margin
+    marginRight: wp(10),
   },
   formContainer: {
     width: '100%',
@@ -93,36 +93,36 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderWidth: 1,
     borderColor: '#ddd',
-    borderRadius: wp(2), // Responsive border radius
-    paddingHorizontal: wp(6), // Responsive horizontal padding
-    marginVertical: hp(2), // Responsive vertical margin
+    borderRadius: wp(2), 
+    paddingHorizontal: wp(6), 
+    marginVertical: hp(2), 
     width: '90%',
   },
 
   input: {
     flex: 1,
-    height: hp(6), // Responsive height for input field
+    height: hp(6), 
   },
   buttonContainer: {
     alignItems: 'center',
-    marginTop: hp(3), // Responsive margin
+    marginTop: hp(3), 
   },
   button: {
     width: '50%',
     backgroundColor: '#E3963E',
-    borderRadius: wp(2), // Responsive border radius
+    borderRadius: wp(2), 
     alignItems: 'center',
     alignSelf: 'center',
-    paddingVertical: hp(2), // Responsive padding
+    paddingVertical: hp(2),
   },
   buttonText: {
     color: '#fff',
-    fontSize: wp(4), // Responsive font size
+    fontSize: wp(4),
     fontWeight: 'normal',
   },
   errorText: {
     marginBottom: hp(2),
-    fontSize: wp(4), // Responsive font size for error message
+    fontSize: wp(4), 
     color: 'red',
     textAlign: 'center',
   },

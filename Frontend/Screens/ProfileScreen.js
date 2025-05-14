@@ -7,17 +7,23 @@ import {
   ImageBackground,
   TextInput,
 } from "react-native";
+import Feather from "react-native-vector-icons/Feather";
 import Header from "../Shared/Header";
 import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
 } from "react-native-responsive-screen";
+import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 
 const ProfileScreen = ({ navigation }) => {
   const [showResetFields, setShowResetFields] = useState(false);
   const [oldPassword, setOldPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+
+  const [showOld, setShowOld] = useState(false);
+  const [showNew, setShowNew] = useState(false);
+  const [showConfirm, setShowConfirm] = useState(false);
 
   const handleResetClick = () => {
     setShowResetFields(true);
@@ -31,13 +37,25 @@ const ProfileScreen = ({ navigation }) => {
     setConfirmPassword("");
   };
 
+  const handleCancel = () => {
+    setShowResetFields(false);
+    setOldPassword("");
+    setNewPassword("");
+    setConfirmPassword("");
+  };
+
   return (
     <ImageBackground
       resizeMode="cover"
       source={require("../assets/Images/ProfileBackground.png")}
       style={styles.background}
     >
-      <View style={styles.container}>
+      <KeyboardAwareScrollView
+        contentContainerStyle={styles.scrollContent}
+        enableOnAndroid
+        extraScrollHeight={hp(5)}
+        keyboardShouldPersistTaps="handled"
+      >
         <Header navigation={navigation} />
 
         <View style={styles.profileCard}>
@@ -63,34 +81,70 @@ const ProfileScreen = ({ navigation }) => {
             </TouchableOpacity>
           ) : (
             <View style={styles.inputSection}>
-              <TextInput
-                placeholder="Old Password"
-                secureTextEntry
-                value={oldPassword}
-                onChangeText={setOldPassword}
-                style={styles.input}
-              />
-              <TextInput
-                placeholder="New Password"
-                secureTextEntry
-                value={newPassword}
-                onChangeText={setNewPassword}
-                style={styles.input}
-              />
-              <TextInput
-                placeholder="Confirm Password"
-                secureTextEntry
-                value={confirmPassword}
-                onChangeText={setConfirmPassword}
-                style={styles.input}
-              />
-              <TouchableOpacity style={styles.submitBtn} onPress={handleSubmit}>
-                <Text style={styles.submitText}>Submit</Text>
-              </TouchableOpacity>
+             
+              <View style={styles.inputWrapper}>
+                <TextInput
+                  placeholder="Old Password"
+                  secureTextEntry={!showOld}
+                  value={oldPassword}
+                  onChangeText={setOldPassword}
+                  style={styles.input}
+                />
+                <TouchableOpacity
+                  style={styles.eyeIcon}
+                  onPress={() => setShowOld(!showOld)}
+                >
+                  <Feather name={showOld ? "eye" : "eye-off"} size={20} color="#888" />
+                </TouchableOpacity>
+              </View>
+
+             
+              <View style={styles.inputWrapper}>
+                <TextInput
+                  placeholder="New Password"
+                  secureTextEntry={!showNew}
+                  value={newPassword}
+                  onChangeText={setNewPassword}
+                  style={styles.input}
+                />
+                <TouchableOpacity
+                  style={styles.eyeIcon}
+                  onPress={() => setShowNew(!showNew)}
+                >
+                  <Feather name={showNew ? "eye" : "eye-off"} size={20} color="#888" />
+                </TouchableOpacity>
+              </View>
+
+             
+              <View style={styles.inputWrapper}>
+                <TextInput
+                  placeholder="Confirm Password"
+                  secureTextEntry={!showConfirm}
+                  value={confirmPassword}
+                  onChangeText={setConfirmPassword}
+                  style={styles.input}
+                />
+                <TouchableOpacity
+                  style={styles.eyeIcon}
+                  onPress={() => setShowConfirm(!showConfirm)}
+                >
+                  <Feather name={showConfirm ? "eye" : "eye-off"} size={20} color="#888" />
+                </TouchableOpacity>
+              </View>
+
+              <View style={styles.buttonRow}>
+                <TouchableOpacity style={styles.submitBtn} onPress={handleSubmit}>
+                  <Text style={styles.submitText}>Submit</Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity style={styles.cancelBtn} onPress={handleCancel}>
+                  <Text style={styles.cancelText}>Cancel</Text>
+                </TouchableOpacity>
+              </View>
             </View>
           )}
         </View>
-      </View>
+      </KeyboardAwareScrollView>
     </ImageBackground>
   );
 };
@@ -99,22 +153,17 @@ const styles = StyleSheet.create({
   background: {
     flex: 1,
   },
-  container: {
-    flex: 1,
-    position: "relative",
+  scrollContent: {
+    flexGrow: 1,
+    justifyContent: "flex-end", 
   },
   profileCard: {
-    position: "absolute",
-    bottom: 0,
-    left: 0,
-    right: 0,
-    height: hp(70),
     backgroundColor: "#FFFFFF",
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
     paddingHorizontal: wp(7),
-    paddingTop: hp(3),
-    paddingBottom: hp(3),
+    paddingTop: hp(2),
+    paddingBottom: hp(7),
     elevation: 3,
     alignItems: "center",
   },
@@ -139,7 +188,7 @@ const styles = StyleSheet.create({
   info: {
     fontSize: wp(5),
     color: "#333",
-    marginBottom: hp(1.5),
+    marginBottom: hp(2.5),
     alignSelf: "flex-start",
   },
   label: {
@@ -155,26 +204,51 @@ const styles = StyleSheet.create({
     marginTop: hp(2),
     width: "100%",
   },
+  inputWrapper: {
+    position: "relative",
+    marginBottom: hp(1.5),
+  },
   input: {
     backgroundColor: "#f3f4f6",
     padding: wp(3),
+    paddingRight: wp(10), 
     borderRadius: 8,
-    marginBottom: hp(1.5),
     borderColor: "#d1d5db",
     borderWidth: 1,
   },
-  submitBtn: {
+  eyeIcon: {
+    position: "absolute",
+    right: wp(3),
+    top: "35%",
+  },
+  buttonRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
     marginTop: hp(2),
-    width: wp(50),
+    width: "100%",
+  },
+  submitBtn: {
+    width: "48%",
     backgroundColor: "#E67E00",
     borderRadius: 8,
     alignItems: "center",
     paddingVertical: hp(1.8),
-    alignSelf: "center",
   },
   submitText: {
     color: "#fff",
     fontWeight: "bold",
+  },
+  cancelBtn: {
+    width: "48%",
+    backgroundColor: "#636357",
+    borderRadius: 8,
+    alignItems: "center",
+    paddingVertical: hp(1.8),
+  },
+  cancelText: {
+    color: "#fff",
+    fontWeight: "bold",
+
   },
 });
 

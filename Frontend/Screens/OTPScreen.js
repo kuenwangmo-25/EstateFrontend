@@ -10,10 +10,10 @@ const OTPScreen = ({ navigation }) => {
     <KeyboardAwareScrollView
       contentContainerStyle={styles.container}
       enableOnAndroid={true}
-      extraScrollHeight={hp(10)} // Adjust the space when keyboard is visible
+      extraScrollHeight={hp(10)} 
     >
       <Header
-        navigation={navigation}  // Pass navigation prop for the back button functionality
+        navigation={navigation} 
       />
       <Image source={require('../assets/Images/logo.png')} style={styles.logo} />
 
@@ -45,38 +45,38 @@ const styles = StyleSheet.create({
     flexGrow: 1,
     backgroundColor: '#FFFFFF',
     alignItems: 'center',
-    padding: wp(5), // Responsive padding
-    marginTop: hp(2), // Responsive margin
+    padding: wp(5), 
+    marginTop: hp(2), 
   },
   logo: {
-    width: wp(50), // Responsive width
-    height: wp(50), // Responsive height
-    marginTop: hp(5), // Responsive margin
+    width: wp(50), 
+    height: wp(50), 
+    marginTop: hp(5),
     resizeMode: 'contain',
   },
   infoText: {
     textAlign: 'center',
-    marginVertical: hp(1), // Reduced vertical margin to bring text closer
-    fontSize: wp(4.5), // Responsive font size
+    marginVertical: hp(1), 
+    fontSize: wp(4.5),
     color: '#333',
     marginRight: "10%",
   },
   otpBox: {
-    width: wp(80), // Responsive width
-    height: hp(30), // Responsive height
-    padding: wp(5), // Responsive padding
+    width: wp(80),
+    height: hp(30), 
+    padding: wp(5), 
     backgroundColor: '#EFEFEF',
     borderRadius: 8,
-    margin: wp(5), // Responsive margin
+    margin: wp(5), 
     marginRight: "20%",
     alignItems: 'center',
     justifyContent: 'center',
   },
   otpText: {
-    fontSize: wp(4), // Responsive font size
+    fontSize: wp(4),
     color: '#000',
     textAlign: 'center',
-    marginBottom: hp(2), // Responsive margin
+    marginBottom: hp(2), 
     marginRight: "5%",
   },
   otpWord: {
@@ -84,17 +84,17 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   button: {
-    width: wp(50), // Responsive width
+    width: wp(50),
     backgroundColor: '#E3963E',
     borderRadius: 8,
     alignItems: 'center',
-    paddingVertical: hp(2), // Responsive padding
+    paddingVertical: hp(2),
     alignSelf: 'center',
-    marginTop: hp(3), // Responsive margin
+    marginTop: hp(3),
   },
   buttonText: {
     color: '#fff',
-    fontSize: wp(5), // Responsive font size
+    fontSize: wp(5),
     fontWeight: 'normal',
   },
 });
