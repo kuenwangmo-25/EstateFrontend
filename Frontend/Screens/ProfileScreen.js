@@ -8,8 +8,10 @@ import {
   TextInput,
 } from "react-native";
 import Header from "../Shared/Header";
-import { widthPercentageToDP as wp, heightPercentageToDP as hp } from "react-native-responsive-screen";
-import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+import {
+  widthPercentageToDP as wp,
+  heightPercentageToDP as hp,
+} from "react-native-responsive-screen";
 
 const ProfileScreen = ({ navigation }) => {
   const [showResetFields, setShowResetFields] = useState(false);
@@ -38,16 +40,12 @@ const ProfileScreen = ({ navigation }) => {
       <View style={styles.container}>
         <Header navigation={navigation} />
 
-        <KeyboardAwareScrollView
-          contentContainerStyle={styles.profileCard}
-          enableOnAndroid={true}
-          extraScrollHeight={hp(10)} // Adjusts the space when the keyboard is visible
-        >
-          <Text style={styles.profileTitle}>
+        <View style={styles.profileCard}>
+          <View style={styles.titleRow}>
             <View style={styles.line} />
-            <Text style={styles.profileTitle}>  Profile </Text>
+            <Text style={styles.profileTitle}>Profile</Text>
             <View style={styles.line} />
-          </Text>
+          </View>
 
           <Text style={styles.info}>
             <Text style={styles.label}>Name: </Text>Jigme Dema
@@ -91,7 +89,7 @@ const ProfileScreen = ({ navigation }) => {
               </TouchableOpacity>
             </View>
           )}
-        </KeyboardAwareScrollView>
+        </View>
       </View>
     </ImageBackground>
   );
@@ -103,37 +101,46 @@ const styles = StyleSheet.create({
   },
   container: {
     flex: 1,
+    position: "relative",
   },
   profileCard: {
-    width: "100%",
-    height: hp(50), // Use responsive height
+    position: "absolute",
+    bottom: 0,
+    left: 0,
+    right: 0,
+    height: hp(70),
     backgroundColor: "#FFFFFF",
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
-    padding: wp(7), // Use responsive padding
-    alignItems: "center",
+    paddingHorizontal: wp(7),
+    paddingTop: hp(3),
+    paddingBottom: hp(3),
     elevation: 3,
-    position: "absolute",
-    bottom: 0,
+    alignItems: "center",
+  },
+  titleRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: hp(3),
+    justifyContent: "center",
   },
   profileTitle: {
-    fontSize: wp(7), // Responsive font size
+    fontSize: wp(7),
     fontWeight: "bold",
     textAlign: "center",
     color: "#E67E00",
-    marginBottom: hp(3), // Responsive margin
-  },
-  line: {
-    width: wp(20), // Responsive width
-    height: 3,
-    backgroundColor: '#097969',
     marginHorizontal: 10,
   },
+  line: {
+    width: wp(20),
+    height: 3,
+    backgroundColor: "#097969",
+  },
   info: {
-    fontSize: wp(5), // Responsive font size
+    fontSize: wp(5),
     color: "#333",
-    marginBottom: hp(2), // Responsive margin
-    alignSelf: 'flex-start',
+    marginBottom: hp(1.5),
+    alignSelf: "flex-start",
   },
   label: {
     fontWeight: "600",
@@ -141,28 +148,28 @@ const styles = StyleSheet.create({
   },
   resetText: {
     color: "#E67E00",
-    marginTop: hp(2), // Responsive margin
+    marginTop: hp(2),
     fontWeight: "bold",
   },
   inputSection: {
-    marginTop: hp(3), // Responsive margin top
+    marginTop: hp(2),
     width: "100%",
   },
   input: {
     backgroundColor: "#f3f4f6",
-    padding: wp(3), // Responsive padding
+    padding: wp(3),
     borderRadius: 8,
-    marginBottom: hp(2), // Responsive margin bottom
+    marginBottom: hp(1.5),
     borderColor: "#d1d5db",
     borderWidth: 1,
   },
   submitBtn: {
-    marginTop: hp(5), // Responsive margin top
-    width: wp(50), // Responsive button width
-    backgroundColor: '#E67E00',
+    marginTop: hp(2),
+    width: wp(50),
+    backgroundColor: "#E67E00",
     borderRadius: 8,
-    alignItems: 'center',
-    paddingVertical: hp(2), // Responsive padding
+    alignItems: "center",
+    paddingVertical: hp(1.8),
     alignSelf: "center",
   },
   submitText: {

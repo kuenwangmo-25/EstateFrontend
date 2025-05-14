@@ -19,6 +19,7 @@ const IssueReport = ({ navigation }) => {
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [description, setDescription] = useState("");
   const [image, setImage] = useState(null);
+  const [imagePickerVisible, setImagePickerVisible] = useState(false);
 
   const [open, setOpen] = useState(false);
   const [category, setCategory] = useState(null);
@@ -29,18 +30,19 @@ const IssueReport = ({ navigation }) => {
     { label: "Cleaning", value: "Cleaning" },
   ]);
 
-  const handleImagePick = async () => {
-    const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
+  const pickFromCamera = async () => {
+    const permissionResult = await ImagePicker.requestCameraPermissionsAsync();
     if (!permissionResult.granted) {
-      alert('Permission to access camera roll is required!');
+      alert('Permission to access camera is required!');
       return;
     }
-    const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+
+    const result = await ImagePicker.launchCameraAsync({
       allowsEditing: true,
       aspect: [4, 3],
       quality: 1,
     });
+
     if (!result.canceled) {
       const manipulatedImage = await ImageManipulator.manipulateAsync(
         result.assets[0].uri,
@@ -49,6 +51,32 @@ const IssueReport = ({ navigation }) => {
       );
       setImage(manipulatedImage.uri);
     }
+    setImagePickerVisible(false);
+  };
+
+  const pickFromGallery = async () => {
+    const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    if (!permissionResult.granted) {
+      alert('Permission to access gallery is required!');
+      return;
+    }
+
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      aspect: [4, 3],
+      quality: 1,
+    });
+
+    if (!result.canceled) {
+      const manipulatedImage = await ImageManipulator.manipulateAsync(
+        result.assets[0].uri,
+        [{ resize: { width: 100, height: 100 } }],
+        { compress: 0.8, format: ImageManipulator.SaveFormat.JPEG }
+      );
+      setImage(manipulatedImage.uri);
+    }
+    setImagePickerVisible(false);
   };
 
   const handleSubmit = () => {
@@ -145,11 +173,12 @@ const IssueReport = ({ navigation }) => {
         <Button
           icon="camera"
           mode="outlined"
-          onPress={handleImagePick}
+          onPress={() => setImagePickerVisible(true)}
           style={styles.uploadImageButton}
         >
           Upload Image
         </Button>
+
         {image && <Image source={{ uri: image }} style={styles.image} />}
 
         <Button
@@ -160,6 +189,28 @@ const IssueReport = ({ navigation }) => {
           Submit
         </Button>
       </View>
+
+      <Modal
+        visible={imagePickerVisible}
+        transparent={true}
+        animationType="slide"
+        onRequestClose={() => setImagePickerVisible(false)}
+      >
+        <View style={styles.modalBackground}>
+          <View style={styles.modalContainer}>
+            <Text style={styles.modalTitle}>Choose Image Source</Text>
+            <TouchableOpacity style={styles.modalButton} onPress={pickFromCamera}>
+              <Text style={styles.modalButtonText}>Take Photo</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.modalButton} onPress={pickFromGallery}>
+              <Text style={styles.modalButtonText}>Choose from Gallery</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.modalButton} onPress={() => setImagePickerVisible(false)}>
+              <Text style={styles.modalButtonText}>Cancel</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 };
@@ -285,6 +336,36 @@ const styles = StyleSheet.create({
     marginLeft: wp('2%'),
     fontSize: wp('5%'),
     color: '#097969',
+  },
+  modalBackground: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  },
+  modalContainer: {
+    width: '80%',
+    backgroundColor: 'white',
+    borderRadius: 10,
+    padding: 20,
+    alignItems: 'center',
+  },
+  modalTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 15,
+  },
+  modalButton: {
+    width: '100%',
+    padding: 12,
+    marginTop: 10,
+    borderRadius: 5,
+    backgroundColor: '#E3963E',
+    alignItems: 'center',
+  },
+  modalButtonText: {
+    color: 'white',
+    fontSize: 16,
   },
 });
 
