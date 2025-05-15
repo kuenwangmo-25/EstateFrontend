@@ -71,10 +71,11 @@ const LoginScreen = ({ navigation }) => {
   
         // Dispatch login success to context
         dispatch({
-          type: 'LOGIN_SUCCESS',
+          type: 'SET_CURRENT_USER',
           payload: decoded, // or response.data.user if available
         });
 
+        console.log("decoded",decoded)
 
         Toast.show({
           type: 'success',

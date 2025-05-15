@@ -29,8 +29,14 @@ const HomeScreen = ({ navigation }) => {
  
   const [notificationCount, setNotificationCount] = useState(0);
   const userId = context?.stateUser?.user?.id;
+console.log("Auth Context State:", context.stateUser);
 
     useEffect(() => {
+       if (!userId) {
+    // If no userId (logged out), do not start polling
+    setNotificationCount(0); // reset count if needed
+    return;
+  }
       const fetchUnseenCount = async () => {
         try {
           const response = await axios.get(`${baseURL}/remarks/unseen/${userId}`);
@@ -43,9 +49,9 @@ const HomeScreen = ({ navigation }) => {
       };
 
       fetchUnseenCount(); // Initial
-      // const interval = setInterval(fetchUnseenCount, 30000); // Every 30s
+      const interval = setInterval(fetchUnseenCount, 30000); // Every 30s
 
-      // return () => clearInterval(interval); // Cleanup
+      return () => clearInterval(interval); // Cleanup
       }, [userId]);
 
  const handleLogout = async () => {

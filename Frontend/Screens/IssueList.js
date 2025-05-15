@@ -22,6 +22,7 @@ const groupByDate = (issues) => {
 export default function IssueListScreen({ navigation }) {
   const context = useContext(AuthGlobal);
   const userId  =context?.stateUser?.user?.id;
+  console.log(userId)
 
 
   const [groupedIssues, setGroupedIssues] = useState({});

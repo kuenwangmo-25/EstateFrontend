@@ -9,7 +9,6 @@ import Toast from 'react-native-toast-message';
 
 
 const FeedbackScreen = ({ navigation }) => {
-  console.log('handleSubmit called');
 
    const [feedback, setFeedback] = useState('');
 
@@ -25,7 +24,6 @@ const FeedbackScreen = ({ navigation }) => {
     }
 
     try {
-      console.log(feedback)
       const response = await axios.post(`${baseURL}/feedback`, {
         Feedback:feedback
       });
