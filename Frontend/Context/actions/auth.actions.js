@@ -2,6 +2,8 @@ import jwt_decode from "jwt-decode";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import Toast from "react-native-toast-message";
 import baseURL from "../../assets/common/baseUrl";
+import axios from "axios";
+
 //constants
 export const SET_CURRENT_USER = "SET_CURRENT_USER";
 
@@ -61,10 +63,41 @@ export const getUserProfile = (id) => {
     .then((res) => res.json())
     .then((data) => console.log(data));
 };
+
 export const logoutUser = (dispatch) => {
-  AsyncStorage.removeItem("jwt");
-  dispatch(setCurrentUser({}));
+  AsyncStorage.getItem("jwt")
+    .then((token) => {
+      // Optional: Call your logout API
+      return axios.post(
+        `${baseURL}/logout`, // adjust to your real endpoint
+        {},
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+    })
+    .catch((error) => {
+      console.warn("Logout API failed (maybe optional):", error.message);
+    })
+    .finally(() => {
+      // Clear token and update state
+      AsyncStorage.removeItem("jwt")
+        .then(() => {
+          dispatch(setCurrentUser({}));
+
+          Toast.show({
+            topOffset: 60,
+            type: "success",
+            text1: "Logout Successful",
+            text2: "",
+          });
+        })
+        .catch((err) => {
+          console.error("Error clearing AsyncStorage:", err);
+        });
+    });
 };
+
 export const setCurrentUser = (decoded, user) => {
   return {
     type: SET_CURRENT_USER,

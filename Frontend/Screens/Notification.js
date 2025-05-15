@@ -65,30 +65,37 @@ const NotificationScreen = ({ navigation }) => {
         showsVerticalScrollIndicator={false}
         style={styles.scrollViewContainer}
       >
-        {filteredNotifications.length === 0 ? (
-          <Text style={styles.noResultText}>No notifications found.</Text>
-        ) : (
-          filteredNotifications.map((item, index) => {
-            // Only show notifications with a remark
-            if (item.latestRemark) {
-              return (
-                <View style={styles.notificationBox} key={item.issueId}>
-                  {(index === 0 || filteredNotifications[index - 1].date !== item.date) && (
-                    <Text style={styles.dateHeader}>{item.date}</Text>
-                  )}
-                  <View style={styles.notificationContent}>
-                    <Ionicons name="person-circle" size={40} color="#097969" style={styles.icon} />
-                    <View style={styles.textContainer}>
-                      <Text style={styles.notificationTitle}>{item.category}</Text>
-                      <Text style={styles.notificationDescription}>{item.latestRemark.message}</Text>
-                    </View>
-                  </View>
-                </View>
-              );
-            }
-            return null; // Skip rendering if no remark
-          })
-        )}
+       {filteredNotifications.length === 0 ? (
+  <Text style={styles.noResultText}>No notifications found.</Text>
+) : (
+  filteredNotifications.map((item, index) => {
+    if (item.latestRemark && item.latestRemark.sentAt) {
+      const currentDate = new Date(item.latestRemark.sentAt).toDateString();
+      const prevDate =
+        index > 0 && filteredNotifications[index - 1]?.latestRemark?.sentAt
+          ? new Date(filteredNotifications[index - 1].latestRemark.sentAt).toDateString()
+          : null;
+
+      return (
+        <View style={styles.notificationBox} key={item.issueId}>
+          {index === 0 || currentDate !== prevDate ? (
+            <Text style={styles.dateHeader}>{currentDate}</Text>
+          ) : null}
+
+          <View style={styles.notificationContent}>
+            <Ionicons name="person-circle" size={40} color="#097969" style={styles.icon} />
+            <View style={styles.textContainer}>
+              <Text style={styles.notificationTitle}>{item.category}</Text>
+              <Text style={styles.notificationDescription}>{item.latestRemark.message}</Text>
+            </View>
+          </View>
+        </View>
+      );
+    }
+    return null;
+  })
+)}
+
       </ScrollView>
     </View>
   );

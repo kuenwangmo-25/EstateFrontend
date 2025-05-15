@@ -13,12 +13,20 @@ import { widthPercentageToDP as wp, heightPercentageToDP as hp } from "react-nat
 import axios from "axios";
 import baseURL from "../assets/common/baseUrl";
 import AuthGlobal from "../Context/store/AuthGlobal";
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import Toast from 'react-native-toast-message';
+
+
+
+
 // Get screen dimensions
 const { width, height } = Dimensions.get("window");
 
 const HomeScreen = ({ navigation }) => {
-  const context = useContext(AuthGlobal);
+    const { dispatch } = useContext(AuthGlobal);
 
+  const context = useContext(AuthGlobal);
+ 
   const [notificationCount, setNotificationCount] = useState(0);
   const userId = context?.stateUser?.user?.id;
 
@@ -26,20 +34,63 @@ const HomeScreen = ({ navigation }) => {
       const fetchUnseenCount = async () => {
         try {
           const response = await axios.get(`${baseURL}/remarks/unseen/${userId}`);
-          console.log(response)
           const unseen = response.data.unseenCount || 0;
           setNotificationCount(unseen);
         } catch (error) {
-          console.error("Error fetching unseen remark count:", error);
+          error("Error fetching unseen remark count:", error);
           setNotificationCount(0);
         }
       };
 
       fetchUnseenCount(); // Initial
-      const interval = setInterval(fetchUnseenCount, 30000); // Every 30s
+      // const interval = setInterval(fetchUnseenCount, 30000); // Every 30s
 
-      return () => clearInterval(interval); // Cleanup
+      // return () => clearInterval(interval); // Cleanup
       }, [userId]);
+
+ const handleLogout = async () => {
+    try {
+      const token = await AsyncStorage.getItem('jwt');
+
+      // Call your logout API endpoint with the Bearer token
+      await axios.get(
+        `${baseURL}/logout`,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      // Clear JWT from AsyncStorage
+      await AsyncStorage.removeItem('jwt');
+
+      // Dispatch logout action
+      dispatch({
+        type: 'LOGOUT',
+      });
+
+      Toast.show({
+        type: 'success',
+        text1: 'Logout Successful',
+      });
+
+      // Redirect to login
+      navigation.navigate('Login');
+
+    } catch (error) {
+      console.log('Logout error:', error?.response || error.message);
+      Toast.show({
+        type: 'error',
+        text1: 'Logout Failed',
+        text2: error?.response?.data?.message || 'Try again later.',
+      });
+    }
+  };
+
+
+
 
   return (
     <View style={styles.container}>
@@ -59,10 +110,11 @@ const HomeScreen = ({ navigation }) => {
             />
           </TouchableOpacity>
 
-          <TouchableOpacity
-            onPress={() => navigation.navigate("Login")}
-            style={styles.logoutContainer}
-          >
+         <TouchableOpacity
+              onPress={handleLogout}
+        style={[styles.logoutContainer,{ zIndex: 10 }]}
+>    
+
             <Text style={styles.logoutText}>Logout</Text>
             <Icon name="power-off" size={wp(7)} color="#E3963E" style={{ marginLeft: wp(1) }} />
           </TouchableOpacity>

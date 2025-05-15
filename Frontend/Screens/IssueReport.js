@@ -1,7 +1,7 @@
 import React, { useState,useEffect } from "react";
 import {
   View, Text, TextInput, TouchableOpacity,
-  Image, StyleSheet, Modal,ScrollView
+  Image, StyleSheet, Modal
 } from "react-native";
 import DropDownPicker from "react-native-dropdown-picker";
 import DateTimePicker from "@react-native-community/datetimepicker";
@@ -15,6 +15,7 @@ import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import baseURL from '../assets/common/baseUrl';
 import Toast from 'react-native-toast-message';
+import { ScrollView } from "react-native";
 
 
 const IssueReport = ({ navigation }) => {
@@ -24,11 +25,14 @@ const IssueReport = ({ navigation }) => {
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [description, setDescription] = useState("");
   const [image, setImage] = useState(null);
+  const [imagePickerVisible, setImagePickerVisible] = useState(false);
+
 
   const [open, setOpen] = useState(false);
   
     const [items, setItems] = useState([]);
     const [category, setCategory] = useState(null);
+
   useEffect(() => {
   const fetchCategories = async () => {
     try {
@@ -46,18 +50,20 @@ const IssueReport = ({ navigation }) => {
   fetchCategories();
 }, []);
 
-  const handleImagePick = async () => {
-    const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
+  
+  const pickFromCamera = async () => {
+    const permissionResult = await ImagePicker.requestCameraPermissionsAsync();
     if (!permissionResult.granted) {
-      alert('Permission to access camera roll is required!');
+      alert('Permission to access camera is required!');
       return;
     }
-    const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+
+    const result = await ImagePicker.launchCameraAsync({
       allowsEditing: true,
       aspect: [4, 3],
       quality: 1,
     });
+
     if (!result.canceled) {
       const manipulatedImage = await ImageManipulator.manipulateAsync(
         result.assets[0].uri,
@@ -66,7 +72,34 @@ const IssueReport = ({ navigation }) => {
       );
       setImage(manipulatedImage.uri);
     }
+    setImagePickerVisible(false);
   };
+
+  const pickFromGallery = async () => {
+    const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    if (!permissionResult.granted) {
+      alert('Permission to access gallery is required!');
+      return;
+    }
+
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      aspect: [4, 3],
+      quality: 1,
+    });
+
+    if (!result.canceled) {
+      const manipulatedImage = await ImageManipulator.manipulateAsync(
+        result.assets[0].uri,
+        [{ resize: { width: 100, height: 100 } }],
+        { compress: 0.8, format: ImageManipulator.SaveFormat.JPEG }
+      );
+      setImage(manipulatedImage.uri);
+    }
+    setImagePickerVisible(false);
+  };
+
 
 const handleSubmit = async () => {
   try {
@@ -81,7 +114,7 @@ const handleSubmit = async () => {
 
     const formData = new FormData();
     formData.append("location", location);
-    formData.append("contact", contact);
+    formData.append("contactNo", contact);
     formData.append("description", description);
     formData.append("category", category); // if you're sending string
     formData.append("date", date.toISOString());
@@ -96,7 +129,7 @@ const handleSubmit = async () => {
         name: fileName,
       });
     }
-
+console.log (formData)
     const response = await axios.post(`${baseURL}/issue`, formData, {
       headers: {
         "Content-Type": "multipart/form-data",
@@ -123,8 +156,7 @@ const handleSubmit = async () => {
   return (
     <View style={styles.container}>
       <Header navigation={navigation} />
-      
-      <ScrollView>
+
       <TouchableOpacity
         style={[styles.issueListButton, { zIndex: 10 }]} // Make sure the button is above other elements
         onPress={() => navigation.navigate('IssueList')}
@@ -137,7 +169,7 @@ const handleSubmit = async () => {
         source={require('../assets/Images/Issue.png')}
         style={styles.img}
       />
-
+      <ScrollView>
       <View style={styles.borderedContainer}>
         <View style={styles.issueHeaderContainer}>
           <View style={styles.line} />
@@ -208,11 +240,12 @@ const handleSubmit = async () => {
         <Button
           icon="camera"
           mode="outlined"
-          onPress={handleImagePick}
+          onPress={() => setImagePickerVisible(true)}
           style={styles.uploadImageButton}
         >
           Upload Image
         </Button>
+
         {image && <Image source={{ uri: image }} style={styles.image} />}
 
         <Button
@@ -223,7 +256,30 @@ const handleSubmit = async () => {
           Submit
         </Button>
       </View>
-      </ScrollView>
+              </ScrollView>
+
+
+      <Modal
+        visible={imagePickerVisible}
+        transparent={true}
+        animationType="slide"
+        onRequestClose={() => setImagePickerVisible(false)}
+      >
+        <View style={styles.modalBackground}>
+          <View style={styles.modalContainer}>
+            <Text style={styles.modalTitle}>Choose Image Source</Text>
+            <TouchableOpacity style={styles.modalButton} onPress={pickFromCamera}>
+              <Text style={styles.modalButtonText}>Take Photo</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.modalButton} onPress={pickFromGallery}>
+              <Text style={styles.modalButtonText}>Choose from Gallery</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.modalButton} onPress={() => setImagePickerVisible(false)}>
+              <Text style={styles.modalButtonText}>Cancel</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 };
@@ -349,6 +405,36 @@ const styles = StyleSheet.create({
     marginLeft: wp('2%'),
     fontSize: wp('5%'),
     color: '#097969',
+  },
+  modalBackground: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  },
+  modalContainer: {
+    width: '80%',
+    backgroundColor: 'white',
+    borderRadius: 10,
+    padding: 20,
+    alignItems: 'center',
+  },
+  modalTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 15,
+  },
+  modalButton: {
+    width: '100%',
+    padding: 12,
+    marginTop: 10,
+    borderRadius: 5,
+    backgroundColor: '#E3963E',
+    alignItems: 'center',
+  },
+  modalButtonText: {
+    color: 'white',
+    fontSize: 16,
   },
 });
 

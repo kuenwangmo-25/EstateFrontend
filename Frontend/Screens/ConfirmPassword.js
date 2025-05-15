@@ -9,7 +9,7 @@ import baseURL from '../assets/common/baseUrl';
 import axios from 'axios';
 
 
-const ConfirmPassword = ({ navigation }) => {
+const ConfirmPassword = ({ navigation ,route}) => {
   const [otp, setOTP] = useState('');
   const [error, setError] = useState('');
   const { email } = route.params; // Get the email passed from RegisterScreen

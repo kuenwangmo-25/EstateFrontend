@@ -75,7 +75,7 @@ const LoginScreen = ({ navigation }) => {
           payload: decoded, // or response.data.user if available
         });
 
-  
+
         Toast.show({
           type: 'success',
           text1: 'Login Successful',
