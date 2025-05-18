@@ -198,8 +198,8 @@ const styles = StyleSheet.create({
   },
   topBar: {
     width: "100%",
-    paddingHorizontal: wp(5), // Responsive padding
-    paddingTop: hp(5), // Responsive padding
+    paddingHorizontal: wp(5),
+    paddingTop: hp(5),
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
@@ -208,11 +208,10 @@ const styles = StyleSheet.create({
     zIndex: 10,
   },
   profilePic: {
-    width: wp(10), // Responsive width
-    height: wp(10), // Responsive height
-    borderRadius: wp(5), // Responsive border radius
+    width: wp(10),
+    height: wp(10),
+    borderRadius: wp(5),
     backgroundColor: "transparent",
-    
   },
   logoutContainer: {
     flexDirection: "row",
@@ -220,22 +219,22 @@ const styles = StyleSheet.create({
   },
   logoutText: {
     color: "#E3963E",
-    fontSize: wp(4.5), // Responsive font size
+    fontSize: wp(4.5),
     fontWeight: "600",
   },
   overlay: {
     width: "100%",
     alignItems: "center",
     justifyContent: "flex-start",
-    paddingTop: hp(25), // Responsive padding
+    paddingTop: hp(25),
     paddingBottom: hp(4),
   },
   title: {
-    fontSize: wp(12), // Responsive font size
+    fontSize: wp(12),
     fontWeight: "bold",
     textAlign: "center",
     color: "#ffffff",
-    marginBottom: hp(2), // Responsive margin
+    marginBottom: hp(2),
   },
   titleWhite: {
     color: "#FFFFFF",
@@ -246,90 +245,74 @@ const styles = StyleSheet.create({
   subtitle: {
     color: "#ffffff",
     textAlign: "center",
-    fontSize: wp(5), // Responsive font size
-    marginBottom: hp(8), // Responsive margin
+    fontSize: wp(5),
+    marginBottom: hp(8),
   },
   content: {
     position: "absolute",
     bottom: 0,
     width: "100%",
     backgroundColor: "#FFFFFF",
-    paddingHorizontal: wp(6), // Responsive padding
-    paddingVertical: hp(3), // Responsive padding
-    borderTopLeftRadius: wp(5), // Responsive radius
-    borderTopRightRadius: wp(5), // Responsive radius
+    paddingHorizontal: wp(6),
+    paddingVertical: hp(3),
+    borderTopLeftRadius: wp(5),
+    borderTopRightRadius: wp(5),
     shadowColor: "#000000",
     shadowOffset: { width: 0, height: -5 },
     shadowOpacity: 0.1,
     shadowRadius: 20,
-    minHeight: hp(35), // Responsive height
+    minHeight: hp(35),
   },
   contentInner: {
     flex: 1,
-    justifyContent: "space-between",
+    justifyContent: "flex-start",
+    marginBottom: hp(-2)
   },
   description: {
     textAlign: "center",
     color: "#808080",
-    fontSize: wp(5), // Responsive font size
-    marginBottom: hp(2), // Responsive margin
+    fontSize: wp(5),
+    marginBottom: hp(2),
+  
   },
   actions: {
     flexDirection: "row",
     justifyContent: "space-around",
-    marginBottom: hp(2), // Responsive margin
+    marginBottom: hp(7), 
     width: "100%",
   },
   actionItem: {
     alignItems: "center",
     alignSelf: "center",
-    padding: wp(4), // Responsive padding
+    padding: wp(5),
     borderWidth: 1,
     borderColor: "#EFEFEF",
-    borderRadius: wp(2), // Responsive border radius
+    borderRadius: wp(2),
     backgroundColor: "#EFEFEF",
-    width: wp(27), // Responsive width
+    width: wp(28),
+    height: wp(25),
   },
   actionText: {
     color: "#4b5563",
-    marginTop: hp(1), // Responsive margin
+    marginTop: hp(1),
+    fontSize: hp(1.4),
   },
-  contactButton: {
-    backgroundColor: '#E3963E',
-    padding: wp(4), // Responsive padding
-    borderRadius: wp(2), // Responsive radius
-    alignItems: "center",
-    width: "50%",
-    alignSelf: "center",
-    marginTop: hp(3), // Responsive margin
-    position: "relative", 
-    top: -hp(4),
-    paddingVertical: hp(2), // Responsive padding
-  },
+ contactButton: {
+  backgroundColor: "#E3963E",
+  padding: wp(3),
+  borderRadius: wp(2),
+  alignItems: "center",
+  width: "50%",
+  alignSelf: "center",
+  marginBottom: hp(7), 
+  paddingVertical: hp(2),
+  
+},
+
   contactText: {
     color: "#ffffff",
     fontWeight: "bold",
   },
-  badge: {
-  position: 'absolute',
-  top: -5,
-  right: -5,
-  backgroundColor: 'red',
-  borderRadius: wp(4),
-  minWidth: wp(5),
-  height: wp(5),
-  justifyContent: 'center',
-  alignItems: 'center',
-  paddingHorizontal: 2,
-  zIndex: 10,
-},
-badgeText: {
-  color: 'white',
-  fontSize: wp(2.5),
-  fontWeight: 'bold',
-},
-
-
 });
 
 export default HomeScreen;
