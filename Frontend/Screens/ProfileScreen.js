@@ -25,12 +25,44 @@ const ProfileScreen = ({ navigation }) => {
   const [showNew, setShowNew] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
 
+  // For inline error messages
+  const [newPassError, setNewPassError] = useState("");
+  const [confirmPassError, setConfirmPassError] = useState("");
+
   const handleResetClick = () => {
     setShowResetFields(true);
   };
 
+  const validatePassword = (password) => {
+    // At least 8 chars, one uppercase, one number, one special char
+    const regex = /^(?=.*[A-Z])(?=.*[!@#$%^&*])(?=.*[0-9]).{8,}$/;
+    return regex.test(password);
+  };
+
   const handleSubmit = () => {
+    let valid = true;
+
+    if (!validatePassword(newPassword)) {
+      setNewPassError(
+        "Password must be 8+ chars, include uppercase, number & special char."
+      );
+      valid = false;
+    } else {
+      setNewPassError("");
+    }
+
+    if (newPassword !== confirmPassword) {
+      setConfirmPassError("New Password and Confirm Password do not match.");
+      valid = false;
+    } else {
+      setConfirmPassError("");
+    }
+
+    if (!valid) return;
+
+    // Submit logic here
     console.log("Old:", oldPassword, "New:", newPassword, "Confirm:", confirmPassword);
+
     setShowResetFields(false);
     setOldPassword("");
     setNewPassword("");
@@ -42,6 +74,8 @@ const ProfileScreen = ({ navigation }) => {
     setOldPassword("");
     setNewPassword("");
     setConfirmPassword("");
+    setNewPassError("");
+    setConfirmPassError("");
   };
 
   return (
@@ -81,7 +115,6 @@ const ProfileScreen = ({ navigation }) => {
             </TouchableOpacity>
           ) : (
             <View style={styles.inputSection}>
-             
               <View style={styles.inputWrapper}>
                 <TextInput
                   placeholder="Old Password"
@@ -98,13 +131,22 @@ const ProfileScreen = ({ navigation }) => {
                 </TouchableOpacity>
               </View>
 
-             
               <View style={styles.inputWrapper}>
                 <TextInput
                   placeholder="New Password"
                   secureTextEntry={!showNew}
                   value={newPassword}
-                  onChangeText={setNewPassword}
+                  onChangeText={(text) => {
+                    setNewPassword(text);
+                    // live validation on typing (optional)
+                    if (!validatePassword(text)) {
+                      setNewPassError(
+                        "Password must be 8+ chars, include uppercase, number & special char."
+                      );
+                    } else {
+                      setNewPassError("");
+                    }
+                  }}
                   style={styles.input}
                 />
                 <TouchableOpacity
@@ -114,14 +156,23 @@ const ProfileScreen = ({ navigation }) => {
                   <Feather name={showNew ? "eye" : "eye-off"} size={20} color="#888" />
                 </TouchableOpacity>
               </View>
+              {newPassError ? (
+                <Text style={styles.errorText}>{newPassError}</Text>
+              ) : null}
 
-             
               <View style={styles.inputWrapper}>
                 <TextInput
                   placeholder="Confirm Password"
                   secureTextEntry={!showConfirm}
                   value={confirmPassword}
-                  onChangeText={setConfirmPassword}
+                  onChangeText={(text) => {
+                    setConfirmPassword(text);
+                    if (newPassword !== text) {
+                      setConfirmPassError("New Password and Confirm Password do not match.");
+                    } else {
+                      setConfirmPassError("");
+                    }
+                  }}
                   style={styles.input}
                 />
                 <TouchableOpacity
@@ -131,6 +182,9 @@ const ProfileScreen = ({ navigation }) => {
                   <Feather name={showConfirm ? "eye" : "eye-off"} size={20} color="#888" />
                 </TouchableOpacity>
               </View>
+              {confirmPassError ? (
+                <Text style={styles.errorText}>{confirmPassError}</Text>
+              ) : null}
 
               <View style={styles.buttonRow}>
                 <TouchableOpacity style={styles.submitBtn} onPress={handleSubmit}>
@@ -155,7 +209,7 @@ const styles = StyleSheet.create({
   },
   scrollContent: {
     flexGrow: 1,
-    justifyContent: "flex-end", 
+    justifyContent: "flex-end",
   },
   profileCard: {
     backgroundColor: "#FFFFFF",
@@ -211,7 +265,7 @@ const styles = StyleSheet.create({
   input: {
     backgroundColor: "#f3f4f6",
     padding: wp(3),
-    paddingRight: wp(10), 
+    paddingRight: wp(10),
     borderRadius: 8,
     borderColor: "#d1d5db",
     borderWidth: 1,
@@ -248,7 +302,12 @@ const styles = StyleSheet.create({
   cancelText: {
     color: "#fff",
     fontWeight: "bold",
-
+  },
+  errorText: {
+    color: "red",
+    fontSize: wp(3.5),
+    marginBottom: hp(1),
+    marginLeft: wp(1),
   },
 });
 

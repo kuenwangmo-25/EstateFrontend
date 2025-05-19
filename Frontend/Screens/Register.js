@@ -1,10 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Text,
   TouchableOpacity,
   StyleSheet,
   Image,
-  View,
 } from 'react-native';
 import Header from '../Shared/Header';
 import Icon from 'react-native-vector-icons/FontAwesome';
@@ -16,10 +15,34 @@ import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-nat
 const RegisterScreen = ({ navigation }) => {
   const [email, setEmail] = useState('');
   const [error, setError] = useState('');
+  const [isButtonDisabled, setIsButtonDisabled] = useState(true);
+
+  const validateEmail = (email) => {
+    const regex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    return regex.test(email);
+  };
+
+  useEffect(() => {
+    if (email.trim() === '') {
+      setError('');
+      setIsButtonDisabled(true);
+    } else if (!validateEmail(email)) {
+      setError('Please enter a valid email address');
+      setIsButtonDisabled(true);
+    } else {
+      setError('');
+      setIsButtonDisabled(false);
+    }
+  }, [email]);
 
   const handleRegister = () => {
     if (email.trim() === '') {
       setError('Please enter your email');
+      return;
+    }
+
+    if (!validateEmail(email)) {
+      setError('Please enter a valid email address');
       return;
     }
 
@@ -33,9 +56,7 @@ const RegisterScreen = ({ navigation }) => {
       keyboardShouldPersistTaps="handled"
       enableOnAndroid={true}
     >
-      <Header
-        navigation={navigation}  
-      />
+      <Header navigation={navigation} />
       <Image source={require('../assets/Images/logo.png')} style={styles.logo} />
 
       <Text style={styles.infoText}>
@@ -56,11 +77,13 @@ const RegisterScreen = ({ navigation }) => {
           inputStyle={styles.input}
         />
 
-        <View style={styles.buttonContainer}>
-          <TouchableOpacity style={styles.button} onPress={handleRegister}>
-            <Text style={styles.buttonText}>Register</Text>
-          </TouchableOpacity>
-        </View>
+        <TouchableOpacity
+          style={[styles.button, isButtonDisabled && styles.buttonDisabled]}
+          onPress={handleRegister}
+          disabled={isButtonDisabled}
+        >
+          <Text style={styles.buttonText}>Register</Text>
+        </TouchableOpacity>
       </FormContainer>
     </KeyboardAwareScrollView>
   );
@@ -71,24 +94,25 @@ const styles = StyleSheet.create({
     flexGrow: 1,
     backgroundColor: '#fff',
     alignItems: 'center',
-    padding: wp(4), 
+    padding: wp(4),
   },
   logo: {
-    width: wp(50), 
-    height: wp(50), 
-    marginTop: hp(5), 
-    marginBottom: hp(3), 
+    width: wp(50),
+    height: wp(50),
+    marginTop: hp(5),
+    marginBottom: hp(3),
     resizeMode: 'contain',
   },
   infoText: {
     textAlign: 'center',
-    marginVertical: hp(1), 
+    marginVertical: hp(1),
     fontSize: wp(4),
     color: '#333',
-    marginRight: "10%",
+    marginRight: '10%',
   },
   formContainer: {
     width: '100%',
+    alignItems: 'center',
   },
   inputContainer: {
     flexDirection: 'row',
@@ -96,30 +120,35 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#ddd',
     borderRadius: 8,
-    paddingHorizontal: wp(5), 
-    marginVertical: hp(2), 
+    paddingHorizontal: wp(5),
+    marginVertical: hp(2),
     width: '90%',
   },
   input: {
     flex: 1,
-    height: hp(6), 
-  },
-  buttonContainer: {
-    alignItems: 'center',
-    marginTop: hp(5), 
+    height: hp(6),
   },
   button: {
     marginTop: hp(4),
-    width: wp(60), 
-    backgroundColor: '#E3963E', 
+    width: wp(60),
+    backgroundColor: '#E3963E',
     borderRadius: 8,
     alignItems: 'center',
-    paddingVertical: hp(2), 
+    paddingVertical: hp(2),
+  },
+  buttonDisabled: {
+    backgroundColor: '#ccc',
   },
   buttonText: {
     color: '#fff',
-    fontSize: wp(5), 
+    fontSize: wp(5),
     fontWeight: 'normal',
+  },
+  errorText: {
+    color: 'red',
+    fontSize: wp(4),
+    marginBottom: hp(1),
+    textAlign: 'center',
   },
 });
 

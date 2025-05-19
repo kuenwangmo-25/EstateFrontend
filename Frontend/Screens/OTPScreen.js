@@ -1,5 +1,5 @@
 import React from 'react';
-import { ScrollView, Text, TouchableOpacity, StyleSheet, Image, View } from 'react-native';
+import {  Text, TouchableOpacity, StyleSheet, Image, View } from 'react-native';
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import FormContainer from '../Shared/FormContainer';

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { ScrollView, Text, TouchableOpacity, StyleSheet, Image, View } from 'react-native';
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen'; 
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'; 
@@ -6,14 +6,22 @@ import FormContainer from '../Shared/FormContainer';
 import Header from '../Shared/Header';
 
 const DefaultPassword = ({ navigation }) => {
+  const [buttonDisabled, setButtonDisabled] = useState(false);
+
+  const handleOkayPress = () => {
+    setButtonDisabled(true);  // Disable button immediately
+    navigation.navigate("confirmPassword");
+    // Optionally re-enable button after a delay if you want:
+    // setTimeout(() => setButtonDisabled(false), 2000);
+  };
+
   return (
     <KeyboardAwareScrollView
       contentContainerStyle={styles.container}
       keyboardShouldPersistTaps="handled" 
     >
-      <Header
-        navigation={navigation}  
-      />
+      <Header navigation={navigation} />
+      
       <Image source={require('../assets/Images/logo.png')} style={styles.logo} />
 
       <FormContainer>
@@ -31,8 +39,9 @@ const DefaultPassword = ({ navigation }) => {
           </Text>
 
           <TouchableOpacity
-            style={styles.button}
-            onPress={() => navigation.navigate("confirmPassword")}
+            style={[styles.button, buttonDisabled && styles.buttonDisabled]}
+            onPress={handleOkayPress}
+            disabled={buttonDisabled}
           >
             <Text style={styles.buttonText}>Okay</Text>
           </TouchableOpacity>
@@ -90,6 +99,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingVertical: hp(2),
     alignSelf: 'center',
+  },
+  buttonDisabled: {
+    backgroundColor: '#cfa75a', // lighter color when disabled
   },
   buttonText: {
     color: '#fff',

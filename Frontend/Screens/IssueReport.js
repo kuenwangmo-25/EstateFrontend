@@ -2,12 +2,11 @@ import React, { useState } from "react";
 import {
   View, Text, TextInput, TouchableOpacity,
   Image, StyleSheet, Modal, FlatList,
-  KeyboardAvoidingView, Platform
+  KeyboardAvoidingView, Platform, Dimensions
 } from "react-native";
-import DropDownPicker from "react-native-dropdown-picker";
+import DropDownPicker from "react-native-dropdown-picker"; 
 import DateTimePicker from "@react-native-community/datetimepicker";
 import * as ImagePicker from "expo-image-picker";
-import * as ImageManipulator from "expo-image-manipulator";
 import { Button } from "react-native-paper";
 import Icon from "react-native-vector-icons/FontAwesome";
 import Header from '../Shared/Header';
@@ -16,12 +15,15 @@ import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-nat
 const IssueReport = ({ navigation }) => {
   const [location, setLocation] = useState("");
   const [contact, setContact] = useState("");
+  const [contactValid, setContactValid] = useState(true);
   const [date, setDate] = useState(new Date());
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [showCalendarModal, setShowCalendarModal] = useState(false);
   const [description, setDescription] = useState("");
   const [image, setImage] = useState(null);
+  const [imageDimensions, setImageDimensions] = useState(null);
   const [imagePickerVisible, setImagePickerVisible] = useState(false);
+  const [successModalVisible, setSuccessModalVisible] = useState(false);
 
   const [open, setOpen] = useState(false);
   const [category, setCategory] = useState(null);
@@ -32,58 +34,71 @@ const IssueReport = ({ navigation }) => {
     { label: "Cleaning", value: "Cleaning" },
   ]);
 
-  const pickFromCamera = async () => {
-    const permissionResult = await ImagePicker.requestCameraPermissionsAsync();
-    if (!permissionResult.granted) {
-      alert('Permission to access camera is required!');
-      return;
-    }
+  const [locationError, setLocationError] = useState(false);
+  const [categoryError, setCategoryError] = useState(false);
+  const [descriptionError, setDescriptionError] = useState(false);
 
-    const result = await ImagePicker.launchCameraAsync({
-      allowsEditing: true,
-      aspect: [4, 3],
-      quality: 1,
-    });
-
-    if (!result.canceled) {
-      const manipulatedImage = await ImageManipulator.manipulateAsync(
-        result.assets[0].uri,
-        [{ resize: { width: 100, height: 100 } }],
-        { compress: 0.8, format: ImageManipulator.SaveFormat.JPEG }
-      );
-      setImage(manipulatedImage.uri);
-    }
-    setImagePickerVisible(false);
+  const validateContact = (text) => {
+    if (text.length > 8) return;
+    const regex = /^(17|77)\d{6}$/;
+    setContactValid(regex.test(text));
+    setContact(text);
   };
 
-  const pickFromGallery = async () => {
-    const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
-    if (!permissionResult.granted) {
-      alert('Permission to access gallery is required!');
+  const pickImage = async (fromCamera) => {
+    const permission = fromCamera
+      ? await ImagePicker.requestCameraPermissionsAsync()
+      : await ImagePicker.requestMediaLibraryPermissionsAsync();
+
+    if (!permission.granted) {
+      alert("Permission is required!");
       return;
     }
 
-    const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      allowsEditing: true,
-      aspect: [4, 3],
-      quality: 1,
-    });
+    const result = fromCamera
+      ? await ImagePicker.launchCameraAsync({ allowsEditing: false, quality: 1 })
+      : await ImagePicker.launchImageLibraryAsync({ allowsEditing: false, quality: 1 });
 
     if (!result.canceled) {
-      const manipulatedImage = await ImageManipulator.manipulateAsync(
-        result.assets[0].uri,
-        [{ resize: { width: 100, height: 100 } }],
-        { compress: 0.8, format: ImageManipulator.SaveFormat.JPEG }
-      );
-      setImage(manipulatedImage.uri);
+      const uri = result.assets[0].uri;
+      Image.getSize(uri, (width, height) => {
+        const screenWidth = Dimensions.get('window').width - wp('10%');
+        const scaleFactor = width / screenWidth;
+        const imageHeight = height / scaleFactor;
+        setImageDimensions({ width: screenWidth, height: imageHeight });
+        setImage(uri);
+      });
     }
     setImagePickerVisible(false);
   };
 
   const handleSubmit = () => {
+    setLocationError(false);
+    setCategoryError(false);
+    setDescriptionError(false);
+
+    let valid = true;
+
+    if (location.trim() === "") {
+      setLocationError(true);
+      valid = false;
+    }
+    if (contact.trim() === "" || !contactValid) {
+      valid = false;
+    }
+    if (!category) {
+      setCategoryError(true);
+      valid = false;
+    }
+    if (description.trim() === "") {
+      setDescriptionError(true);
+      valid = false;
+    }
+
+    if (!valid) return;
+
     console.log("Issue Submitted:", { location, contact, category, date, description, image });
-    navigation.goBack();
+    setSuccessModalVisible(true);
   };
 
   const formattedDate = `${date.toLocaleString('default', { month: 'long' })} ${date.getDate()}`;
@@ -97,9 +112,7 @@ const IssueReport = ({ navigation }) => {
     }
   };
 
-  const handleDonePress = () => {
-    setShowCalendarModal(false);
-  };
+  const handleDonePress = () => setShowCalendarModal(false);
 
   return (
     <KeyboardAvoidingView
@@ -108,27 +121,13 @@ const IssueReport = ({ navigation }) => {
       keyboardVerticalOffset={hp('10%')}
     >
       <Header navigation={navigation} />
-
-      
-      <TouchableOpacity
-        style={styles.issueListButton}
-        onPress={() => navigation.navigate('IssueList')}
-      >
-        <Icon name="exclamation-circle" size={25} color="#097969" />
-        <Text style={styles.issueListText}>IssueList</Text>
-      </TouchableOpacity>
-
       <FlatList
         contentContainerStyle={styles.scrollContainer}
         keyboardShouldPersistTaps="handled"
         data={[1]}
         renderItem={() => (
-          <>
-            <Image
-              source={require('../assets/Images/Issue.png')}
-              style={styles.img}
-            />
-
+          <View>
+            <Image source={require('../assets/Images/Issue.png')} style={styles.img} />
             <View style={styles.borderedContainer}>
               <View style={styles.issueHeaderContainer}>
                 <View style={styles.line} />
@@ -136,19 +135,32 @@ const IssueReport = ({ navigation }) => {
                 <View style={styles.line} />
               </View>
 
-              <TextInput
-                placeholder="Location"
-                style={styles.input}
-                value={location}
-                onChangeText={setLocation}
+              <TextInput 
+                placeholder="Location" 
+                style={[styles.input, locationError && styles.inputError]} 
+                value={location} 
+                onChangeText={(text) => {
+                  setLocation(text);
+                  if (locationError && text.trim() !== "") setLocationError(false);
+                }} 
               />
+              {locationError && (
+                <Text style={styles.errorText}>Location is required</Text>
+              )}
+
               <TextInput
                 placeholder="Contact"
-                style={styles.input}
+                style={[styles.input, { borderColor: contact === "" ? "#ccc" : contactValid ? "green" : "red" }]}
                 value={contact}
-                onChangeText={setContact}
+                onChangeText={validateContact}
                 keyboardType="phone-pad"
+                maxLength={8}
               />
+              {!contactValid && contact !== "" && (
+                <Text style={styles.errorText}>
+                  Contact must start with 17 or 77 and be 8 digits long
+                </Text>
+              )}
 
               <DropDownPicker
                 open={open}
@@ -158,21 +170,20 @@ const IssueReport = ({ navigation }) => {
                 setValue={setCategory}
                 setItems={setItems}
                 placeholder="Category"
-                style={styles.dropdown}
+                style={[styles.dropdown, categoryError && styles.inputError]}
                 dropDownContainerStyle={styles.dropdownContainer}
+                onChangeValue={(value) => {
+                  if (categoryError && value) setCategoryError(false);
+                }}
               />
+              {categoryError && (
+                <Text style={styles.errorText}>Category is required</Text>
+              )}
 
               <View style={styles.dateContainer}>
                 <Text style={styles.dateText}>Date to avail our services:</Text>
-
                 <TouchableOpacity
-                  onPress={() => {
-                    if (Platform.OS === 'ios') {
-                      setShowCalendarModal(true);
-                    } else {
-                      setShowDatePicker(true);
-                    }
-                  }}
+                  onPress={() => Platform.OS === 'ios' ? setShowCalendarModal(true) : setShowDatePicker(true)}
                   style={styles.dateBox}
                 >
                   <Text style={styles.dateTextDisplay}>{formattedDate}</Text>
@@ -193,48 +204,39 @@ const IssueReport = ({ navigation }) => {
                 placeholder="Description"
                 multiline
                 numberOfLines={6}
-                style={[styles.input, { height: hp('8%') }]}
+                style={[styles.input, { height: hp('8%') }, descriptionError && styles.inputError]}
                 value={description}
-                onChangeText={setDescription}
+                onChangeText={(text) => {
+                  setDescription(text);
+                  if (descriptionError && text.trim() !== "") setDescriptionError(false);
+                }}
               />
+              {descriptionError && (
+                <Text style={styles.errorText}>Description is required</Text>
+              )}
 
-              <Button
-                icon="camera"
-                mode="outlined"
-                onPress={() => setImagePickerVisible(true)}
-                style={styles.uploadImageButton}
-              >
+              <Button icon="camera" mode="outlined" onPress={() => setImagePickerVisible(true)} style={styles.uploadImageButton}>
                 Upload Image
               </Button>
 
-              {image && <Image source={{ uri: image }} style={styles.image} />}
+              {image && imageDimensions && (
+                <Image source={{ uri: image }} style={{ ...styles.image, ...imageDimensions }} resizeMode="contain" />
+              )}
 
-              <Button
-                mode="contained"
-                onPress={handleSubmit}
-                style={styles.submitButton}
-              >
+              <Button mode="contained" onPress={handleSubmit} style={styles.submitButton}>
                 Submit
               </Button>
             </View>
 
-           
-            <Modal
-              visible={showCalendarModal}
-              transparent={true}
-              animationType="slide"
-              onRequestClose={() => setShowCalendarModal(false)}
-            >
+            {/* Modals */}
+            <Modal visible={showCalendarModal} transparent animationType="slide" onRequestClose={() => setShowCalendarModal(false)}>
               <View style={styles.modalBackground}>
                 <View style={styles.calendarModalContainer}>
                   <View style={styles.calendarHeader}>
                     <Text style={styles.calendarHeaderText}>
                       {date.toLocaleString('default', { month: 'long' })} {date.getFullYear()}
                     </Text>
-                    <TouchableOpacity 
-                      onPress={handleDonePress}
-                      style={styles.closeButton}
-                    >
+                    <TouchableOpacity onPress={handleDonePress} style={styles.closeButton}>
                       <Text style={styles.closeButtonText}>Done</Text>
                     </TouchableOpacity>
                   </View>
@@ -244,28 +246,19 @@ const IssueReport = ({ navigation }) => {
                     display="inline"
                     onChange={handleDateChange}
                     style={styles.iosDatePicker}
-                    themeVariant="light"
-                    textColor="#000000"
-                    accentColor="#7ac943"
                   />
                 </View>
               </View>
             </Modal>
 
-           
-            <Modal
-              visible={imagePickerVisible}
-              transparent={true}
-              animationType="slide"
-              onRequestClose={() => setImagePickerVisible(false)}
-            >
+            <Modal visible={imagePickerVisible} transparent animationType="slide" onRequestClose={() => setImagePickerVisible(false)}>
               <View style={styles.modalBackground}>
                 <View style={styles.modalContainer}>
                   <Text style={styles.modalTitle}>Choose Image Source</Text>
-                  <TouchableOpacity style={styles.modalButton} onPress={pickFromCamera}>
+                  <TouchableOpacity style={styles.modalButton} onPress={() => pickImage(true)}>
                     <Text style={styles.modalButtonText}>Take Photo</Text>
                   </TouchableOpacity>
-                  <TouchableOpacity style={styles.modalButton} onPress={pickFromGallery}>
+                  <TouchableOpacity style={styles.modalButton} onPress={() => pickImage(false)}>
                     <Text style={styles.modalButtonText}>Choose from Gallery</Text>
                   </TouchableOpacity>
                   <TouchableOpacity style={styles.modalButton} onPress={() => setImagePickerVisible(false)}>
@@ -274,9 +267,23 @@ const IssueReport = ({ navigation }) => {
                 </View>
               </View>
             </Modal>
-          </>
+
+            <Modal visible={successModalVisible} transparent animationType="fade">
+              <View style={styles.successModalBackground}>
+                <View style={styles.successModalContainer}>
+                  <Text style={styles.successText}>Your issue has been successfully reported!</Text>
+                  <TouchableOpacity onPress={() => {
+                    setSuccessModalVisible(false);
+                    navigation.goBack();
+                  }} style={styles.successButton}>
+                    <Text style={styles.successButtonText}>OK</Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
+            </Modal>
+          </View>
         )}
-        keyExtractor={(item) => item.toString()}
+        keyExtractor={() => "key"}
       />
     </KeyboardAvoidingView>
   );
@@ -288,25 +295,29 @@ const styles = StyleSheet.create({
     backgroundColor: "#f8f9fa",
   },
   borderedContainer: {
-    flex: 1,
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
     padding: wp('5%'),
     backgroundColor: '#FFFFFF',
     minHeight: hp('100%'),
+    borderWidth: 1,
+    borderColor: "#ccc",
+    marginHorizontal: wp('3%'),
   },
   scrollContainer: {
     flexGrow: 1,
-    padding: wp('5%'),
-    paddingTop: hp('2%'),
     paddingBottom: hp('5%'),
   },
   issueHeaderContainer: {
     flexDirection: 'row',
     alignItems: 'center',
     marginBottom: hp('2%'),
+    marginVertical: hp('2%'),
   },
   line: {
+    flex: 1,
+    height: 1,
+    backgroundColor: "#ccc",
     width: '20%',
     height: 3,
     backgroundColor: '#097969',
@@ -327,6 +338,17 @@ const styles = StyleSheet.create({
     marginBottom: hp('2%'),
     backgroundColor: "#fff",
     color: "#333",
+    marginVertical: hp('1.5%'),
+    fontSize: wp('4%'),
+  },
+  inputError: {
+    borderColor: "red",
+  },
+  errorText: {
+    color: "red",
+    marginBottom: hp('1%'),
+    marginLeft: wp('2%'),
+    fontSize: wp('3.5%'),
   },
   dropdown: {
     borderWidth: 1,
@@ -334,6 +356,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     backgroundColor: "#fff",
     marginBottom: hp('2%'),
+    marginVertical: hp('1.5%'),
   },
   dropdownContainer: {
     backgroundColor: "#fff",
@@ -344,6 +367,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "space-between",
     marginBottom: hp('2%'),
+    marginVertical: hp('1.5%'),
   },
   dateText: {
     fontSize: wp('4%'),
@@ -368,19 +392,16 @@ const styles = StyleSheet.create({
     marginRight: wp('2%'),
   },
   image: {
-    marginVertical: hp('1.5%'),
+    marginTop: hp('2%'),
     alignSelf: "center",
-    width: wp('20%'),
-    height: wp('20%'),
+    borderRadius: 10,
   },
- uploadImageButton: {
-  marginTop: hp('1%'),
-  paddingVertical: hp('1%'),
-  width: wp('40%'),
-  alignSelf: 'flex-start',
-  borderRadius: 8, 
-},
-
+  uploadImageButton: {
+    marginTop: hp('1%'),
+    width: wp('40%'),
+    alignSelf: 'flex-start',
+    borderRadius: 8,
+  },
   submitButton: {
     backgroundColor: '#E3963E',
     padding: hp('1%'),
@@ -398,19 +419,6 @@ const styles = StyleSheet.create({
     marginBottom: hp('2.5%'),
     alignSelf: 'center',
   },
-  issueListButton: {
-    position: 'absolute',
-    top: hp('6%'),
-    right: wp('4%'),
-    flexDirection: 'row',
-    alignItems: 'center',
-    padding: wp('1%'),
-  },
-  issueListText: {
-    marginLeft: wp('2%'),
-    fontSize: wp('5%'),
-    color: '#097969',
-  },
   modalBackground: {
     flex: 1,
     justifyContent: 'flex-end',
@@ -421,57 +429,88 @@ const styles = StyleSheet.create({
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
     padding: 20,
-    paddingBottom: 30,
     maxHeight: '70%',
   },
   calendarHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 15,
-    paddingHorizontal: 10,
+    marginBottom: hp('1%'),
   },
   calendarHeaderText: {
     fontSize: wp('5%'),
-    fontWeight: 'bold',
-    color: '#000',
+    fontWeight: "bold",
   },
   closeButton: {
-    padding: 10,
+    backgroundColor: "#7ac943",
+    borderRadius: 5,
+    paddingHorizontal: wp('3%'),
+    paddingVertical: hp('1%'),
   },
   closeButtonText: {
-    color: '#007AFF',
-    fontSize: wp('4.5%'),
-    fontWeight: '600',
+    color: "white",
+    fontWeight: "bold",
+    fontSize: wp('4%'),
   },
   iosDatePicker: {
     width: '100%',
-    backgroundColor: 'white',
-    height: 330,
   },
   modalContainer: {
+    backgroundColor: "#fff",
     width: wp('80%'),
     padding: wp('5%'),
-    backgroundColor: '#fff',
-    borderRadius: 5,
+    borderRadius: 8,
+    alignItems: "center",
   },
   modalTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    marginBottom: 15,
+    fontSize: wp('5%'),
+    fontWeight: "bold",
+    marginBottom: hp('2%'),
   },
   modalButton: {
-    width: '100%',
-    padding: 12,
-    marginTop: 10,
-    borderRadius: 5,
-    backgroundColor: '#E3963E',
-    alignItems: 'center',
+    backgroundColor: "#7ac943",
+    paddingVertical: hp('1.2%'),
+    paddingHorizontal: wp('6%'),
+    borderRadius: 6,
+    marginVertical: hp('0.8%'),
+    width: "100%",
+    alignItems: "center",
   },
   modalButtonText: {
-    color: 'white',
-    fontSize: 16,
+    color: "#fff",
+    fontSize: wp('4%'),
+    fontWeight: "600",
+  },
+  successModalBackground: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "rgba(0,0,0,0.4)",
+  },
+  successModalContainer: {
+    width: wp('80%'),
+    backgroundColor: "#fff",
+    borderRadius: 10,
+    padding: wp('5%'),
+    alignItems: "center",
+  },
+  successText: {
+    fontSize: wp('4.5%'),
+    marginBottom: hp('2%'),
+    textAlign: "center",
+  },
+  successButton: {
+    backgroundColor: "#7ac943",
+    paddingVertical: hp('1.5%'),
+    paddingHorizontal: wp('10%'),
+    borderRadius: 8,
+  },
+  successButtonText: {
+    color: "#fff",
+    fontWeight: "bold",
+    fontSize: wp('4.5%'),
   },
 });
+
 
 export default IssueReport;

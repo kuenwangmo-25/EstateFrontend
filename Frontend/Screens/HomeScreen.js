@@ -5,7 +5,6 @@ import {
   ImageBackground,
   TouchableOpacity,
   StyleSheet,
-  Image,
   Dimensions,
 } from "react-native";
 import Icon from "react-native-vector-icons/FontAwesome";
@@ -13,7 +12,6 @@ import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
 } from "react-native-responsive-screen";
-
 
 const { width, height } = Dimensions.get("window");
 
@@ -25,14 +23,13 @@ const HomeScreen = ({ navigation }) => {
         resizeMode="cover"
         source={require("../assets/Images/Homepage.png")}
       >
-      
         <View style={styles.topBar}>
           <TouchableOpacity onPress={() => navigation.navigate("ProfileScreen")}>
             <Icon
               name="user-circle"
               size={wp(8)}
               color="#E3963E"
-              style={[styles.profilePic, { backgroundColor: "transparent" }]}
+              style={styles.profilePic}
             />
           </TouchableOpacity>
 
@@ -57,24 +54,21 @@ const HomeScreen = ({ navigation }) => {
             <Text style={styles.titleOrange}>Help Desk</Text>
           </Text>
           <Text style={styles.subtitle}>
-            We're here to assist you with quick solutions{"\n"}and reliable
-            assistance!
+            We're here to assist you with quick solutions{"\n"}and reliable assistance!
           </Text>
         </View>
       </ImageBackground>
 
       <View style={styles.content}>
         <View style={styles.contentInner}>
-          <Text style={styles.description}>
-            We're here to assist you with quick solutions and reliable assistance!
-          </Text>
+          <Text style={styles.assistText}>Ready to assist with quality service!</Text>
 
           <View style={styles.actions}>
             <TouchableOpacity
               style={styles.actionItem}
               onPress={() => navigation.navigate("Notification")}
             >
-              <Icon name="bell" size={wp(7)} color="#E3963E" />
+              <Icon name="bell" size={wp(6)} color="#E3963E" />
               <Text style={styles.actionText}>Notification</Text>
             </TouchableOpacity>
 
@@ -82,16 +76,24 @@ const HomeScreen = ({ navigation }) => {
               style={styles.actionItem}
               onPress={() => navigation.navigate("IssueReport")}
             >
-              <Icon name="file-text" size={wp(7)} color="#E3963E" />
-              <Text style={styles.actionText}>ReportIssue</Text>
+              <Icon name="file-text" size={wp(6)} color="#E3963E" />
+              <Text style={styles.actionText}>Report Issue</Text>
             </TouchableOpacity>
 
             <TouchableOpacity
               style={styles.actionItem}
               onPress={() => navigation.navigate("Feedback")}
             >
-              <Icon name="thumbs-up" size={wp(7)} color="#E3963E" />
+              <Icon name="thumbs-up" size={wp(6)} color="#E3963E" />
               <Text style={styles.actionText}>Feedback</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={styles.actionItem}
+              onPress={() => navigation.navigate("IssueList")}
+            >
+              <Icon name="list" size={wp(6)} color="#E3963E" />
+              <Text style={styles.actionText}>Issue List</Text>
             </TouchableOpacity>
           </View>
 
@@ -147,8 +149,8 @@ const styles = StyleSheet.create({
     width: "100%",
     alignItems: "center",
     justifyContent: "flex-start",
-    paddingTop: hp(25),
-    paddingBottom: hp(4),
+    paddingTop: hp(20),
+    paddingBottom: hp(3),
   },
   title: {
     fontSize: wp(12),
@@ -167,7 +169,7 @@ const styles = StyleSheet.create({
     color: "#ffffff",
     textAlign: "center",
     fontSize: wp(5),
-    marginBottom: hp(8),
+    marginBottom: hp(4),
   },
   content: {
     position: "absolute",
@@ -182,54 +184,53 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: -5 },
     shadowOpacity: 0.1,
     shadowRadius: 20,
-    minHeight: hp(35),
+    minHeight: hp(45),
   },
   contentInner: {
     flex: 1,
     justifyContent: "flex-start",
-    marginBottom: hp(-2)
   },
-  description: {
+  assistText: {
+    fontWeight: "600",
     textAlign: "center",
-    color: "#808080",
-    fontSize: wp(5),
+    fontSize: wp(4),
+    color: "#4b5563",
     marginBottom: hp(2),
-  
   },
   actions: {
     flexDirection: "row",
-    justifyContent: "space-around",
-    marginBottom: hp(7), 
-    width: "100%",
+    flexWrap: "wrap",
+    justifyContent: "space-between",
+    marginTop: hp(1),
+    marginBottom: hp(3),
   },
   actionItem: {
     alignItems: "center",
-    alignSelf: "center",
-    padding: wp(5),
+    justifyContent: "center",
+    padding: wp(3),
     borderWidth: 1,
     borderColor: "#EFEFEF",
     borderRadius: wp(2),
     backgroundColor: "#EFEFEF",
-    width: wp(28),
-    height: wp(25),
+    width: wp(40),
+    height: hp(9),
+    marginBottom: hp(1.5),
   },
   actionText: {
     color: "#4b5563",
-    marginTop: hp(1),
-    fontSize: hp(1.4),
+    marginTop: hp(0.5),
+    fontSize: hp(1.6),
   },
- contactButton: {
-  backgroundColor: "#E3963E",
-  padding: wp(3),
-  borderRadius: wp(2),
-  alignItems: "center",
-  width: "50%",
-  alignSelf: "center",
-  marginBottom: hp(7), 
-  paddingVertical: hp(2),
-  
-},
-
+  contactButton: {
+    backgroundColor: "#E3963E",
+    padding: wp(3),
+    borderRadius: wp(2),
+    alignItems: "center",
+    width: "50%",
+    alignSelf: "center",
+    marginBottom: hp(2),
+    paddingVertical: hp(1.8),
+  },
   contactText: {
     color: "#ffffff",
     fontWeight: "bold",

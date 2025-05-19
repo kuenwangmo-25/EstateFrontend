@@ -7,8 +7,8 @@ import {
   View,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
-import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen'; 
-import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'; 
+import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import FormContainer from '../Shared/FormContainer';
 import Input from '../Shared/Input';
 import Header from '../Shared/Header';
@@ -18,20 +18,22 @@ const ForgotPassword = ({ navigation }) => {
   const [error, setError] = useState('');
 
   const handleConfirm = () => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (email.trim() === '') {
       setError('Please enter your email');
       return;
     }
-
+    if (!emailRegex.test(email)) {
+      setError('Please enter a valid email address');
+      return;
+    }
     setError('');
     navigation.navigate('DefaultPassword');
   };
 
   return (
-    <KeyboardAwareScrollView contentContainerStyle={styles.container} >
-      <Header
-        navigation={navigation}  
-      />
+    <KeyboardAwareScrollView contentContainerStyle={styles.container}>
+      <Header navigation={navigation} />
       <Image source={require('../assets/Images/logo.png')} style={styles.logo} />
 
       <Text style={styles.infoText}>
@@ -69,13 +71,13 @@ const styles = StyleSheet.create({
     flexGrow: 1,
     backgroundColor: '#fff',
     alignItems: 'center',
-    padding: wp(4), 
+    padding: wp(4),
   },
   logo: {
-    width: wp(50), 
-    height: wp(50), 
-    marginTop: hp(5), 
-    marginBottom: hp(3), 
+    width: wp(50),
+    height: wp(50),
+    marginTop: hp(5),
+    marginBottom: hp(3),
     resizeMode: 'contain',
   },
   infoText: {
@@ -93,24 +95,23 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderWidth: 1,
     borderColor: '#ddd',
-    borderRadius: wp(2), 
-    paddingHorizontal: wp(6), 
-    marginVertical: hp(2), 
+    borderRadius: wp(2),
+    paddingHorizontal: wp(6),
+    marginVertical: hp(2),
     width: '90%',
   },
-
   input: {
     flex: 1,
-    height: hp(6), 
+    height: hp(6),
   },
   buttonContainer: {
     alignItems: 'center',
-    marginTop: hp(3), 
+    marginTop: hp(3),
   },
   button: {
     width: '50%',
     backgroundColor: '#E3963E',
-    borderRadius: wp(2), 
+    borderRadius: wp(2),
     alignItems: 'center',
     alignSelf: 'center',
     paddingVertical: hp(2),
@@ -122,7 +123,7 @@ const styles = StyleSheet.create({
   },
   errorText: {
     marginBottom: hp(2),
-    fontSize: wp(4), 
+    fontSize: wp(4),
     color: 'red',
     textAlign: 'center',
   },

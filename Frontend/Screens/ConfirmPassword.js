@@ -13,9 +13,11 @@ const ConfirmPassword = ({ navigation }) => {
   const handleConfirm = () => {
     if (password.trim() === '') {
       setError('Please enter the default password');
-      setTimeout(() => setError(''), 1000); 
+      setTimeout(() => setError(''), 3000); // show error for 3 seconds
       return;
     }
+    // Clear error if any and navigate
+    setError('');
     navigation.navigate('Home');
   };
 
@@ -53,8 +55,14 @@ const ConfirmPassword = ({ navigation }) => {
         />
 
         <View style={styles.button}>
-          <TouchableOpacity onPress={handleConfirm}>
-            <Text style={styles.buttonText}>Confirm</Text>
+          <TouchableOpacity 
+            onPress={handleConfirm} 
+            disabled={password.trim() === ''}  // disable if password is empty
+            activeOpacity={password.trim() === '' ? 1 : 0.7}
+          >
+            <Text style={[styles.buttonText, password.trim() === ''  ]}>
+              Confirm
+            </Text>
           </TouchableOpacity>
         </View>
       </FormContainer>
@@ -112,6 +120,7 @@ const styles = StyleSheet.create({
     fontSize: wp(4.5), 
     fontWeight: 'normal',
   },
+ 
   errorText: {
     fontSize: wp(4), 
     color: '#ff0000',

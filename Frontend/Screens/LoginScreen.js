@@ -16,23 +16,22 @@ const LoginScreen = ({ navigation }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
-  const [showPassword, setShowPassword] = useState(false); 
+  const [showPassword, setShowPassword] = useState(false);
 
   const validateEmail = (email) => {
     const regex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
     return regex.test(email);
   };
 
-  const handleLogin = () => {
-    if (!email || !password) {
-      setError('Please fill in your credential');
-      setTimeout(() => setError(''), 1000);
-      return;
-    }
+  const validatePassword = (password) => {
+    const regex = /^(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]).{6,}$/;
+    return regex.test(password);
+  };
 
-    if (!validateEmail(email)) {
-      setError('Please enter a valid email address');
-      setTimeout(() => setError(''), 1000);
+  const handleLogin = () => {
+    if (!email || !password || !validateEmail(email) || !validatePassword(password)) {
+      setError('Email or password is incorrect');
+      setTimeout(() => setError(''), 2000);
       return;
     }
 
@@ -81,7 +80,7 @@ const LoginScreen = ({ navigation }) => {
         />
         <TouchableOpacity
           style={styles.eyeIcon}
-          onPress={() => setShowPassword(!showPassword)} 
+          onPress={() => setShowPassword(!showPassword)}
         >
           <Feather name={showPassword ? 'eye' : 'eye-off'} size={20} color="#aaa" />
         </TouchableOpacity>
@@ -111,12 +110,12 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     justifyContent: 'center',
     alignItems: 'center',
-    padding: wp(5), 
+    padding: wp(5),
   },
   logo: {
-    width: wp(60), 
-    height: wp(60), 
-    marginBottom: hp(3), 
+    width: wp(60),
+    height: wp(60),
+    marginBottom: hp(3),
     resizeMode: 'contain',
   },
   errorText: {
@@ -131,8 +130,8 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#ddd',
     borderRadius: 8,
-    paddingHorizontal: wp(5), 
-    marginVertical: hp(2), 
+    paddingHorizontal: wp(5),
+    marginVertical: hp(2),
     width: '100%',
   },
   icon: {
@@ -140,8 +139,8 @@ const styles = StyleSheet.create({
   },
   input: {
     flex: 1,
-    height: hp(6), 
-    fontSize: wp(3.8), 
+    height: hp(6),
+    fontSize: wp(3.8),
   },
   eyeIcon: {
     position: 'absolute',
@@ -169,16 +168,16 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   loginButton: {
-    marginTop: hp(5), 
+    marginTop: hp(5),
     width: wp(50),
     backgroundColor: '#E3963E',
     borderRadius: 8,
     alignItems: 'center',
-    paddingVertical: hp(2), 
+    paddingVertical: hp(2),
   },
   loginButtonText: {
     color: '#fff',
-    fontSize: wp(4), 
+    fontSize: wp(4),
     fontWeight: 'normal',
   },
 });

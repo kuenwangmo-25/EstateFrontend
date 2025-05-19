@@ -13,9 +13,11 @@ const OTPConfirmScreen = ({ navigation }) => {
   const handleConfirm = () => {
     if (otp.trim() === '') {
       setError('Please enter the OTP');
-      setTimeout(() => setError(''), 1000); 
+      setTimeout(() => setError(''), 2000);
       return;
     }
+
+    setError('');
     navigation.navigate('Home');
   };
 
@@ -23,7 +25,7 @@ const OTPConfirmScreen = ({ navigation }) => {
     <KeyboardAwareScrollView
       contentContainerStyle={styles.container}
       enableOnAndroid={true}
-      extraScrollHeight={hp(10)} 
+      extraScrollHeight={hp(10)}
     >
       <Image source={require('../assets/Images/logo.png')} style={styles.logo} />
 
@@ -69,13 +71,13 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     justifyContent: 'center',
     alignItems: 'center',
-    padding: wp(5), 
+    padding: wp(5),
   },
   logo: {
-    width: wp(50), 
+    width: wp(50),
     height: wp(50),
-    marginBottom: hp(-5), 
-    marginTop: hp(5), 
+    marginBottom: hp(-5),
+    marginTop: hp(5),
     resizeMode: 'contain',
   },
   infoText: {
@@ -83,7 +85,7 @@ const styles = StyleSheet.create({
     marginVertical: hp(1),
     fontSize: wp(4),
     color: '#333',
-    marginRight: "10%",
+    marginRight: '10%',
   },
   inputContainer: {
     flexDirection: 'row',
@@ -91,22 +93,22 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#ddd',
     borderRadius: 8,
-    paddingHorizontal: wp(5),  
-    marginVertical: hp(2),    
-    width: wp(80),             
+    paddingHorizontal: wp(5),
+    marginVertical: hp(2),
+    width: wp(80),
   },
   input: {
     flex: 1,
     height: hp(6),
   },
   button: {
-    width: wp(50), 
+    width: wp(50),
     backgroundColor: '#E3963E',
     borderRadius: 8,
     alignItems: 'center',
-    paddingVertical: hp(2), 
+    paddingVertical: hp(2),
     alignSelf: 'center',
-    marginTop: hp(3), 
+    marginTop: hp(3),
   },
   buttonText: {
     color: '#fff',
@@ -116,8 +118,8 @@ const styles = StyleSheet.create({
   errorText: {
     color: 'red',
     textAlign: 'center',
-    fontSize: wp(4), 
-    marginBottom: hp(2), 
+    fontSize: wp(4),
+    marginBottom: hp(2),
   },
 });
 

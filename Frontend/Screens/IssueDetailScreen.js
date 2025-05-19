@@ -63,13 +63,14 @@ export default function IssueDetailScreen({ route, navigation }) {
 
 const styles = StyleSheet.create({
   screen: {
-    flex: 1,
+    flexGrow: 1,              // <-- Changed from flex: 1 to flexGrow: 1
     backgroundColor: '#F5F5F5',
     paddingBottom: hp(3),
+    paddingTop: hp(2),        // optional padding for spacing at top
   },
   image: {
     width: '100%',
-    height: hp(40), 
+    height: hp(35), 
     marginBottom: hp(2), 
   },
   card: {

@@ -6,10 +6,17 @@ import Header from '../Shared/Header';
 
 const FeedbackScreen = ({ navigation }) => {
   const [feedback, setFeedback] = useState('');
+  const [error, setError] = useState('');  // <-- error message state
 
   const handleSubmit = () => {
+    if (!feedback.trim()) {
+      setError('Please enter your feedback before submitting.');
+      return;
+    }
+
     console.log('Feedback submitted:', feedback);
     setFeedback('');
+    setError('');
   };
 
   return (
@@ -42,8 +49,13 @@ const FeedbackScreen = ({ navigation }) => {
           placeholder="Descriptions"
           multiline
           value={feedback}
-          onChangeText={setFeedback}
+          onChangeText={(text) => {
+            setFeedback(text);
+            if (error) setError('');
+          }}
         />
+
+        {error ? <Text style={styles.errorText}>{error}</Text> : null}
 
         <TouchableOpacity style={styles.submitButton} onPress={handleSubmit}>
           <Text style={styles.submitText}>Submit</Text>
@@ -74,7 +86,6 @@ const styles = StyleSheet.create({
     paddingVertical: hp(4), 
     flex: 1,
   },
-
   titleContainer: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -107,7 +118,13 @@ const styles = StyleSheet.create({
     padding: wp(4),
     textAlignVertical: 'top',
     backgroundColor: '#fff',
-    marginBottom: hp(4), 
+    marginBottom: hp(1),  // reduced margin to fit error better
+  },
+  errorText: {
+    color: 'red',
+    fontSize: wp(3.5),
+    marginBottom: hp(3),
+    textAlign: 'center',
   },
   submitButton: {
     marginTop: hp(5),
