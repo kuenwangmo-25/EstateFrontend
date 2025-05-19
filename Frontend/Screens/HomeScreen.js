@@ -5,7 +5,6 @@ import {
   ImageBackground,
   TouchableOpacity,
   StyleSheet,
-  Image,
   Dimensions,
 } from "react-native";
 import Icon from "react-native-vector-icons/FontAwesome";
@@ -49,7 +48,7 @@ console.log("Auth Context State:", context.stateUser);
       };
 
       fetchUnseenCount(); // Initial
-      const interval = setInterval(fetchUnseenCount, 30000); // Every 30s
+      const interval = setInterval(fetchUnseenCount, 10000); // Every 10s
 
       return () => clearInterval(interval); // Cleanup
       }, [userId]);
@@ -61,12 +60,13 @@ console.log("Auth Context State:", context.stateUser);
       // Call your logout API endpoint with the Bearer token
       await axios.get(
         `${baseURL}/logout`,
-        {},
-        {
+          {
           headers: {
             Authorization: `Bearer ${token}`,
           },
-        }
+        },
+        {}
+      
       );
 
       // Clear JWT from AsyncStorage
@@ -151,9 +151,14 @@ console.log("Auth Context State:", context.stateUser);
               <Icon name="bell" size={wp(7)} color="#E3963E" />
                 {notificationCount > 0 && (
                   <View style={styles.badge}>
-                    <Text style={styles.badgeText}>{notificationCount}</Text>
+                    {notificationCount === null ? (
+                      <ActivityIndicator size="small" color="#E3963E" />
+                    ) : (
+                      <Text style={styles.badgeText}>{notificationCount}</Text>
+                    )}
                   </View>
                 )}
+
               <Text style={styles.actionText}>Notification</Text>
             </TouchableOpacity>
 

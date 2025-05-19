@@ -20,7 +20,7 @@ const FogotPassword = ({ navigation }) => {
 
   const [email, setEmail] = useState('');
 
-  const [error, setError] = useState('');
+  const [error] = useState('');
 
   const validateEmail = (email) => {
     const regex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;

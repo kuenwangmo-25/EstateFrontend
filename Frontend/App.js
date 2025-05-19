@@ -8,9 +8,10 @@ const App = () => {
   return (
     <Auth>
       <NavigationContainer>
-      <AppNavigator /> {/* Use AppNavigator here */}
+        <AppNavigator /> {/* Use AppNavigator here */}
+      </NavigationContainer>
       <Toast />
-    </NavigationContainer>
+
     </Auth>
     
   );
