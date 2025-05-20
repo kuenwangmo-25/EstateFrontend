@@ -136,6 +136,7 @@ const RegisterScreen = ({ navigation }) => {
       </FormContainer>
     </KeyboardAwareScrollView>
   );
+}
 };
 
 const styles = StyleSheet.create({

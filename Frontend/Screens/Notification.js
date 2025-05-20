@@ -109,7 +109,6 @@ const styles = StyleSheet.create({
   },
   scrollViewContainer: {
     flex: 1,  
-    flex: 1,
     marginTop: hp(15),
   },
   notificationList: {
