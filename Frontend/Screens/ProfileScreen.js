@@ -56,6 +56,12 @@ const ProfileScreen = ({ navigation }) => {
     setShowResetFields(true);
   };
 
+  const validatePassword = (password) => {
+    // At least 8 chars, one uppercase, one number, one special char
+    const regex = /^(?=.*[A-Z])(?=.*[!@#$%^&*])(?=.*[0-9]).{8,}$/;
+    return regex.test(password);
+  };
+
  const handleSubmit = async () => {
   if (!passwordCurrent || !password || !passwordConfirm) {
     Toast.show({
@@ -135,13 +141,23 @@ const ProfileScreen = ({ navigation }) => {
         extraScrollHeight={hp(5)}
         keyboardShouldPersistTaps="handled"
       >
+      <KeyboardAwareScrollView
+        contentContainerStyle={styles.scrollContent}
+        enableOnAndroid
+        extraScrollHeight={hp(5)}
+        keyboardShouldPersistTaps="handled"
+      >
         <Header navigation={navigation} />
 
         <View style={styles.profileCard}>
           <View style={styles.titleRow}>
+        <View style={styles.profileCard}>
+          <View style={styles.titleRow}>
             <View style={styles.line} />
             <Text style={styles.profileTitle}>Profile</Text>
+            <Text style={styles.profileTitle}>Profile</Text>
             <View style={styles.line} />
+          </View>
           </View>
 
             <Text style={styles.info}>
@@ -225,6 +241,8 @@ const ProfileScreen = ({ navigation }) => {
           )}
         </View>
       </KeyboardAwareScrollView>
+        </View>
+      </KeyboardAwareScrollView>
     </ImageBackground>
   );
 };
@@ -249,25 +267,42 @@ const styles = StyleSheet.create({
   },
   titleRow: {
     flexDirection: "row",
+    paddingHorizontal: wp(7),
+    paddingTop: hp(2),
+    paddingBottom: hp(7),
+    elevation: 3,
     alignItems: "center",
+  },
+  titleRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: hp(3),
+    justifyContent: "center",
     marginBottom: hp(3),
     justifyContent: "center",
   },
   profileTitle: {
     fontSize: wp(7),
+    fontSize: wp(7),
     fontWeight: "bold",
     textAlign: "center",
     color: "#E67E00",
     marginHorizontal: 10,
+    marginHorizontal: 10,
   },
   line: {
     width: wp(20),
+    width: wp(20),
     height: 3,
+    backgroundColor: "#097969",
     backgroundColor: "#097969",
   },
   info: {
     fontSize: wp(5),
+    fontSize: wp(5),
     color: "#333",
+    marginBottom: hp(2.5),
+    alignSelf: "flex-start",
     marginBottom: hp(2.5),
     alignSelf: "flex-start",
   },
@@ -278,11 +313,17 @@ const styles = StyleSheet.create({
   resetText: {
     color: "#E67E00",
     marginTop: hp(2),
+    marginTop: hp(2),
     fontWeight: "bold",
   },
   inputSection: {
     marginTop: hp(2),
+    marginTop: hp(2),
     width: "100%",
+  },
+  inputWrapper: {
+    position: "relative",
+    marginBottom: hp(1.5),
   },
   inputWrapper: {
     position: "relative",
@@ -307,10 +348,25 @@ const styles = StyleSheet.create({
     marginTop: hp(2),
     width: "100%",
   },
+  eyeIcon: {
+    position: "absolute",
+    right: wp(3),
+    top: "35%",
+  },
+  buttonRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginTop: hp(2),
+    width: "100%",
+  },
   submitBtn: {
     width: "48%",
     backgroundColor: "#E67E00",
+    width: "48%",
+    backgroundColor: "#E67E00",
     borderRadius: 8,
+    alignItems: "center",
+    paddingVertical: hp(1.8),
     alignItems: "center",
     paddingVertical: hp(1.8),
   },

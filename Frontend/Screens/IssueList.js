@@ -77,20 +77,17 @@ export default function IssueListScreen({ navigation }) {
     </TouchableOpacity>
   );
 
-  const renderSectionHeader = (date) => (
-    <View style={styles.dateHeader}>
-      <Text style={styles.dateText}>{date}</Text>
-    </View>
-  );
-
-  const renderSection = ({ date, issues }) => (
+  const renderSection = ({ item: date }) => (
     <View style={styles.sectionWrapper}>
-      {renderSectionHeader(date)}
+      <View style={styles.dateHeader}>
+        <Text style={styles.dateText}>{date}</Text>
+      </View>
       <FlatList
         data={issues}
         keyExtractor={(item) => item._id}
         renderItem={renderItem}
         ItemSeparatorComponent={() => <View style={styles.separator} />}
+        scrollEnabled={false} // prevent inner scrolling
       />
     </View>
   );
@@ -118,6 +115,11 @@ export default function IssueListScreen({ navigation }) {
 }
 
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#f1f2f6',
+    paddingHorizontal: wp(4),
+    paddingTop: hp(2),
   container: { 
     flex: 1, 
     padding: 16, 
@@ -125,39 +127,53 @@ const styles = StyleSheet.create({
   },
   card: {
     backgroundColor: '#fff',
+    padding: wp(3),
     padding: 12,
     borderRadius: 8,
+    elevation: 2,
     elevation: 3,
     marginBottom: 12,
   },
   categoryWrapper: {
     flexDirection: 'row',
     alignItems: 'center',
+    marginBottom: wp(2),
     marginBottom: 8,
   },
   iconBox: {
+    width: wp(8),
+    height: wp(8),
+    borderRadius: wp(4),
     width: 30,
     height: 30,
     borderRadius: 15,
     backgroundColor: '#E3963E',
     justifyContent: 'center',
     alignItems: 'center',
+    marginRight: wp(3),
     marginRight: 10,
   },
   category: {
     fontWeight: 'bold',
+    fontSize: wp(4.5),
+    color: '#333',
     fontSize: 18,
     color: '#333',
   },
   title: {
+    fontSize: wp(4),
+    color: '#555',
     fontSize: 16,
     color: '#555',
   },
   separator: {
+    height: wp(3),
     height: 12,
   },
   dateHeader: {
     backgroundColor: '#f2f2f2',
+    paddingVertical: wp(2),
+    paddingHorizontal: wp(4),
     paddingVertical: 8,
     paddingHorizontal: 16,
     borderRadius: 5,
@@ -165,13 +181,23 @@ const styles = StyleSheet.create({
   },
   dateText: {
     fontWeight: 'bold',
+    fontSize: wp(4),
     fontSize: 16,
     color: '#E3963E',
   },
   sectionWrapper: {
+    marginBottom: wp(5),
     marginBottom: 20,
   },
   listContent: {
+    paddingBottom: hp(3),
+    paddingTop: hp(10), // Increased gap between header and list
+  },
+  noResultText: {
+    textAlign: 'center',
+    color: '#999',
+    fontSize: wp(4),
+    marginTop: hp(2),
     marginTop: 80,
   },
 });

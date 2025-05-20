@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { Text, TouchableOpacity, StyleSheet, Image, View } from 'react-native';
-import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen'; // Responsive screen utility
-import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'; // Import KeyboardAwareScrollView
-import Icon from 'react-native-vector-icons/FontAwesome5'; // Import FontAwesome5
+import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen'; 
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'; 
+import Icon from 'react-native-vector-icons/FontAwesome5'; 
 import FormContainer from '../Shared/FormContainer';
 import Input from '../Shared/Input';
 import baseURL from '../assets/common/baseUrl';
@@ -59,7 +59,7 @@ const ConfirmPassword = ({ navigation ,route}) => {
   return (
     <KeyboardAwareScrollView 
       contentContainerStyle={styles.container} 
-      keyboardShouldPersistTaps="handled" // Ensures tapping outside the keyboard closes it
+      keyboardShouldPersistTaps="handled" 
     >
       <Image source={require('../assets/Images/logo.png')} style={styles.logo} />
 
@@ -90,8 +90,14 @@ const ConfirmPassword = ({ navigation ,route}) => {
         />
 
         <View style={styles.button}>
-          <TouchableOpacity onPress={handleConfirm}>
-            <Text style={styles.buttonText}>Confirm</Text>
+          <TouchableOpacity 
+            onPress={handleConfirm} 
+            disabled={password.trim() === ''}  // disable if password is empty
+            activeOpacity={password.trim() === '' ? 1 : 0.7}
+          >
+            <Text style={[styles.buttonText, password.trim() === ''  ]}>
+              Confirm
+            </Text>
           </TouchableOpacity>
         </View>
       </FormContainer>
@@ -104,56 +110,57 @@ const styles = StyleSheet.create({
     flexGrow: 1,
     backgroundColor: '#FFFFFF',
     alignItems: 'center',
-    padding: wp(5), // Responsive padding
-    marginTop: hp(3), // Responsive margin top
+    padding: wp(5), 
+    marginTop: hp(3), 
   },
   logo: {
-    width: wp(50), // Responsive width
-    height: wp(50), // Responsive height
-    marginTop: hp(5), // Responsive margin top
-    marginBottom: hp(2), // Responsive margin bottom
+    width: wp(50), 
+    height: wp(50), 
+    marginTop: hp(5), 
+    marginBottom: hp(2), 
     resizeMode: 'contain',
   },
   infoText: {
     textAlign: 'center',
-    marginVertical: hp(1), // Responsive vertical margin
-    fontSize: wp(4), // Responsive font size
+    marginVertical: hp(1), 
+    fontSize: wp(4), 
     color: '#333',
-    marginRight: wp(10), // Responsive margin
+    marginRight: wp(10),
   },
   inputContainer: {
     flexDirection: 'row',
     alignItems: 'center',
     borderWidth: 1,
     borderColor: '#ddd',
-    borderRadius: wp(2), // Responsive border radius
-    paddingHorizontal: wp(6), // Responsive padding
-    marginVertical: hp(2), // Responsive margin
+    borderRadius: wp(2), 
+    paddingHorizontal: wp(6), 
+    marginVertical: hp(2), 
     width: '90%',
   },
   input: {
     flex: 1,
-    height: hp(7), // Responsive height
+    height: hp(7), 
   },
   button: {
-    marginTop: hp(3), // Responsive margin top
+    marginTop: hp(3), 
     width: '50%',
     backgroundColor: '#E3963E',
-    borderRadius: wp(2), // Responsive border radius
+    borderRadius: wp(2), 
     alignItems: 'center',
-    paddingVertical: hp(2), // Responsive padding
+    paddingVertical: hp(2), 
     alignSelf: 'center',
   },
   buttonText: {
     color: '#fff',
-    fontSize: wp(4.5), // Responsive font size
+    fontSize: wp(4.5), 
     fontWeight: 'normal',
   },
+ 
   errorText: {
-    fontSize: wp(4), // Responsive font size
+    fontSize: wp(4), 
     color: '#ff0000',
     textAlign: 'center',
-    marginVertical: hp(2), // Responsive margin
+    marginVertical: hp(2), 
   },
 });
 

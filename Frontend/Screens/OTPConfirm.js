@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ScrollView, Text, TouchableOpacity, StyleSheet, Image, View } from 'react-native';
+import { Text, TouchableOpacity, StyleSheet, Image, View } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome5';
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
@@ -59,7 +59,7 @@ const OTPConfirmScreen = ({ navigation, route }) => {
     <KeyboardAwareScrollView
       contentContainerStyle={styles.container}
       enableOnAndroid={true}
-      extraScrollHeight={hp(10)} // Adjust the space when keyboard is visible
+      extraScrollHeight={hp(10)}
     >
       <Image source={require('../assets/Images/logo.png')} style={styles.logo} />
 
@@ -105,21 +105,21 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     justifyContent: 'center',
     alignItems: 'center',
-    padding: wp(5), // Responsive padding
+    padding: wp(5),
   },
   logo: {
-    width: wp(50), // Responsive width
-    height: wp(50), // Responsive height
-    marginBottom: hp(-5), // Adjusted for better position
-    marginTop: hp(5), // Responsive margin
+    width: wp(50),
+    height: wp(50),
+    marginBottom: hp(-5),
+    marginTop: hp(5),
     resizeMode: 'contain',
   },
   infoText: {
     textAlign: 'center',
-    marginVertical: hp(1), // Reduced vertical margin for better spacing
-    fontSize: wp(4), // Responsive font size
+    marginVertical: hp(1),
+    fontSize: wp(4),
     color: '#333',
-    marginRight: "10%",
+    marginRight: '10%',
   },
   inputContainer: {
     flexDirection: 'row',
@@ -127,33 +127,33 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#ddd',
     borderRadius: 8,
-    paddingHorizontal: wp(5),  // Responsive padding
-    marginVertical: hp(2),     // Responsive margin
-    width: wp(80),             // Responsive width
+    paddingHorizontal: wp(5),
+    marginVertical: hp(2),
+    width: wp(80),
   },
   input: {
     flex: 1,
-    height: hp(6), // Responsive height
+    height: hp(6),
   },
   button: {
-    width: wp(50), // Responsive width
+    width: wp(50),
     backgroundColor: '#E3963E',
     borderRadius: 8,
     alignItems: 'center',
-    paddingVertical: hp(2), // Responsive padding
+    paddingVertical: hp(2),
     alignSelf: 'center',
-    marginTop: hp(3), // Responsive margin
+    marginTop: hp(3),
   },
   buttonText: {
     color: '#fff',
-    fontSize: wp(4.5), // Responsive font size
+    fontSize: wp(4.5),
     fontWeight: 'normal',
   },
   errorText: {
     color: 'red',
     textAlign: 'center',
-    fontSize: wp(4), // Responsive font size
-    marginBottom: hp(2), // Responsive margin
+    fontSize: wp(4),
+    marginBottom: hp(2),
   },
 });
 

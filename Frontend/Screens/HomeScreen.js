@@ -105,14 +105,13 @@ console.log("Auth Context State:", context.stateUser);
         resizeMode="cover"
         source={require("../assets/Images/Homepage.png")}
       >
-        {/* Top Bar */}
         <View style={styles.topBar}>
           <TouchableOpacity onPress={() => navigation.navigate("ProfileScreen")}>
             <Icon
               name="user-circle"
-              size={wp(8)} // Responsive size
+              size={wp(8)}
               color="#E3963E"
-              style={[styles.profilePic, { backgroundColor: 'transparent' }]}
+              style={styles.profilePic}
             />
           </TouchableOpacity>
 
@@ -122,13 +121,19 @@ console.log("Auth Context State:", context.stateUser);
 >    
 
             <Text style={styles.logoutText}>Logout</Text>
-            <Icon name="power-off" size={wp(7)} color="#E3963E" style={{ marginLeft: wp(1) }} />
+            <Icon
+              name="power-off"
+              size={wp(7)}
+              color="#E3963E"
+              style={{ marginLeft: wp(1) }}
+            />
           </TouchableOpacity>
         </View>
 
         <View style={styles.overlay}>
           <Text style={styles.title}>
-            <Text style={styles.titleWhite}>Estate</Text>{"\n"}
+            <Text style={styles.titleWhite}>Estate</Text>
+            {"\n"}
             <Text style={styles.titleOrange}>Help Desk</Text>
           </Text>
           <Text style={styles.subtitle}>
@@ -139,16 +144,14 @@ console.log("Auth Context State:", context.stateUser);
 
       <View style={styles.content}>
         <View style={styles.contentInner}>
-          <Text style={styles.description}>
-            We're here to assist you with quick solutions and reliable assistance!
-          </Text>
+          <Text style={styles.assistText}>Ready to assist with quality service!</Text>
 
           <View style={styles.actions}>
              <TouchableOpacity
               style={styles.actionItem}
               onPress={() => navigation.navigate("Notification")}
             >
-              <Icon name="bell" size={wp(7)} color="#E3963E" />
+              <Icon name="bell" size={wp(6)} color="#E3963E" />
                 {notificationCount > 0 && (
                   <View style={styles.badge}>
                     {notificationCount === null ? (
@@ -166,16 +169,24 @@ console.log("Auth Context State:", context.stateUser);
               style={styles.actionItem}
               onPress={() => navigation.navigate("IssueReport")}
             >
-              <Icon name="file-text" size={wp(7)} color="#E3963E" />
-              <Text style={styles.actionText}>ReportIssue</Text>
+              <Icon name="file-text" size={wp(6)} color="#E3963E" />
+              <Text style={styles.actionText}>Report Issue</Text>
             </TouchableOpacity>
 
             <TouchableOpacity
               style={styles.actionItem}
               onPress={() => navigation.navigate("Feedback")}
             >
-              <Icon name="thumbs-up" size={wp(7)} color="#E3963E" />
+              <Icon name="thumbs-up" size={wp(6)} color="#E3963E" />
               <Text style={styles.actionText}>Feedback</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={styles.actionItem}
+              onPress={() => navigation.navigate("IssueList")}
+            >
+              <Icon name="list" size={wp(6)} color="#E3963E" />
+              <Text style={styles.actionText}>Issue List</Text>
             </TouchableOpacity>
           </View>
 
@@ -205,6 +216,8 @@ const styles = StyleSheet.create({
     width: "100%",
     paddingHorizontal: wp(5),
     paddingTop: hp(5),
+    paddingHorizontal: wp(5),
+    paddingTop: hp(5),
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
@@ -213,6 +226,9 @@ const styles = StyleSheet.create({
     zIndex: 10,
   },
   profilePic: {
+    width: wp(10),
+    height: wp(10),
+    borderRadius: wp(5),
     width: wp(10),
     height: wp(10),
     borderRadius: wp(5),
@@ -225,20 +241,25 @@ const styles = StyleSheet.create({
   logoutText: {
     color: "#E3963E",
     fontSize: wp(4.5),
+    fontSize: wp(4.5),
     fontWeight: "600",
   },
   overlay: {
     width: "100%",
     alignItems: "center",
     justifyContent: "flex-start",
+    paddingTop: hp(20),
+    paddingBottom: hp(3),
     paddingTop: hp(25),
     paddingBottom: hp(4),
   },
   title: {
     fontSize: wp(12),
+    fontSize: wp(12),
     fontWeight: "bold",
     textAlign: "center",
     color: "#ffffff",
+    marginBottom: hp(2),
     marginBottom: hp(2),
   },
   titleWhite: {
@@ -251,6 +272,8 @@ const styles = StyleSheet.create({
     color: "#ffffff",
     textAlign: "center",
     fontSize: wp(5),
+    marginBottom: hp(4),
+    fontSize: wp(5),
     marginBottom: hp(8),
   },
   content: {
@@ -262,19 +285,29 @@ const styles = StyleSheet.create({
     paddingVertical: hp(3),
     borderTopLeftRadius: wp(5),
     borderTopRightRadius: wp(5),
+    paddingHorizontal: wp(6),
+    paddingVertical: hp(3),
+    borderTopLeftRadius: wp(5),
+    borderTopRightRadius: wp(5),
     shadowColor: "#000000",
     shadowOffset: { width: 0, height: -5 },
     shadowOpacity: 0.1,
     shadowRadius: 20,
+    minHeight: hp(45),
     minHeight: hp(35),
   },
   contentInner: {
     flex: 1,
     justifyContent: "flex-start",
+    justifyContent: "flex-start",
     marginBottom: hp(-2)
   },
-  description: {
+  assistText: {
+    fontWeight: "600",
     textAlign: "center",
+    fontSize: wp(4),
+    color: "#4b5563",
+    marginBottom: hp(2),
     color: "#808080",
     fontSize: wp(5),
     marginBottom: hp(2),
@@ -282,23 +315,35 @@ const styles = StyleSheet.create({
   },
   actions: {
     flexDirection: "row",
+    flexWrap: "wrap",
+    justifyContent: "space-between",
+    marginTop: hp(1),
+    marginBottom: hp(3),
     justifyContent: "space-around",
     marginBottom: hp(7), 
     width: "100%",
   },
   actionItem: {
     alignItems: "center",
+    justifyContent: "center",
+    padding: wp(3),
     alignSelf: "center",
     padding: wp(5),
     borderWidth: 1,
     borderColor: "#EFEFEF",
     borderRadius: wp(2),
+    borderRadius: wp(2),
     backgroundColor: "#EFEFEF",
+    width: wp(40),
+    height: hp(9),
+    marginBottom: hp(1.5),
     width: wp(28),
     height: wp(25),
   },
   actionText: {
     color: "#4b5563",
+    marginTop: hp(0.5),
+    fontSize: hp(1.6),
     marginTop: hp(1),
     fontSize: hp(1.4),
   },

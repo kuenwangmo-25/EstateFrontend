@@ -9,6 +9,7 @@ import {
 } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import Feather from 'react-native-vector-icons/Feather';
+import Feather from 'react-native-vector-icons/Feather';
 
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
@@ -144,6 +145,7 @@ const LoginScreen = ({ navigation }) => {
           onChangeText={(text) => setPassword(text)}
           style={styles.input}
           secureTextEntry={!showPassword}
+          secureTextEntry={!showPassword}
         />
         <TouchableOpacity
           style={styles.eyeIcon}
@@ -169,7 +171,7 @@ const LoginScreen = ({ navigation }) => {
       </TouchableOpacity>
     </KeyboardAwareScrollView>
   );
-};
+}};
 
 const styles = StyleSheet.create({
   container: {
@@ -177,9 +179,13 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     justifyContent: 'center',
     alignItems: 'center',
+    padding: wp(5),
     padding: wp(5), 
   },
   logo: {
+    width: wp(60),
+    height: wp(60),
+    marginBottom: hp(3),
     width: wp(60), 
     height: wp(60), 
     marginBottom: hp(3), 
@@ -197,15 +203,24 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#ddd',
     borderRadius: 8,
+    paddingHorizontal: wp(5),
+    marginVertical: hp(2),
     paddingHorizontal: wp(5), 
     marginVertical: hp(2), 
     width: '100%',
   },
   icon: {
     marginRight: wp(2),
+    marginRight: wp(2),
   },
   input: {
     flex: 1,
+    height: hp(6),
+    fontSize: wp(3.8),
+  },
+  eyeIcon: {
+    position: 'absolute',
+    right: wp(3),
     height: hp(6), 
     fontSize: wp(3.8), 
   },
@@ -235,15 +250,19 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   loginButton: {
+    marginTop: hp(5),
+    width: wp(50),
     marginTop: hp(5), 
     width: wp(50),
     backgroundColor: '#E3963E',
     borderRadius: 8,
     alignItems: 'center',
+    paddingVertical: hp(2),
     paddingVertical: hp(2), 
   },
   loginButtonText: {
     color: '#fff',
+    fontSize: wp(4),
     fontSize: wp(4), 
     fontWeight: 'normal',
   },

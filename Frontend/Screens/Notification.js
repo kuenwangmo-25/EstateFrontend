@@ -108,6 +108,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: wp(5),
   },
   scrollViewContainer: {
+    flex: 1,  
     flex: 1,
     marginTop: hp(15),
   },

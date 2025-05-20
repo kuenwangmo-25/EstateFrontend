@@ -13,13 +13,13 @@ const Header1 = ({ navigation, onSearch }) => {
     setIsSearching(!isSearching);
     if (isSearching) {
       Keyboard.dismiss();
-      onSearch(""); // clear search when closing
+      onSearch(""); 
     }
   };
 
   const handleSearchChange = (text) => {
     setSearchText(text);
-    onSearch(text); // live update to parent
+    onSearch(text);
   };
 
   return (
