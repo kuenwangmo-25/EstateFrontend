@@ -11,12 +11,11 @@ import FormContainer from '../Shared/FormContainer';
 import Input from '../Shared/Input';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
-import Toast from 'react-native-toast-message'; // Make sure this is imported at the top
+import Toast from 'react-native-toast-message';
 import axios from 'axios';
 import baseURL from '../assets/common/baseUrl';
 
 const RegisterScreen = ({ navigation }) => {
-
   const [email, setEmail] = useState('');
   const [error, setError] = useState('');
   const [isButtonDisabled, setIsButtonDisabled] = useState(true);
@@ -39,14 +38,7 @@ const RegisterScreen = ({ navigation }) => {
     }
   }, [email]);
 
-  const handleRegister = () => {
-  const validateEmail = (email) => {
-    const regex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
-    return regex.test(email);
-  };
-   
   const handleRegister = async () => {
-    console.log(email)
     if (email.trim() === '') {
       Toast.show({
         type: 'error',
@@ -55,7 +47,7 @@ const RegisterScreen = ({ navigation }) => {
       });
       return;
     }
-  
+
     if (!validateEmail(email)) {
       Toast.show({
         type: 'error',
@@ -64,12 +56,9 @@ const RegisterScreen = ({ navigation }) => {
       });
       return;
     }
-  
+
     try {
-      const response = await axios.post(`${baseURL}/register`, {
-        email : email,
-      });
-      console.log(response.data)
+      const response = await axios.post(`${baseURL}/register`, { email });
 
       if (response.data.status === 'success') {
         Toast.show({
@@ -77,10 +66,9 @@ const RegisterScreen = ({ navigation }) => {
           text1: 'OTP Sent',
           text2: 'Please check your email',
         });
-        navigation.navigate('OTPConfirm', { email }); // Pass email to OTP screen
+        navigation.navigate('OTPConfirm', { email });
       }
     } catch (error) {
-
       const errorMessage = error?.response?.data?.message;
       console.error(error);
 
@@ -99,6 +87,7 @@ const RegisterScreen = ({ navigation }) => {
       }
     }
   };
+
   return (
     <KeyboardAwareScrollView
       contentContainerStyle={styles.container}
