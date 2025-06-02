@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect, useContext } from 'react';
 import {
   View,
   Text,
@@ -12,10 +12,91 @@ import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
 } from "react-native-responsive-screen";
+import axios from "axios";
+import baseURL from "../assets/common/baseUrl";
+import AuthGlobal from "../Context/store/AuthGlobal";
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import Toast from 'react-native-toast-message';
+
+
 
 const { width, height } = Dimensions.get("window");
 
 const HomeScreen = ({ navigation }) => {
+
+    const { dispatch } = useContext(AuthGlobal);
+
+  const context = useContext(AuthGlobal);
+ 
+  const [notificationCount, setNotificationCount] = useState(0);
+  const userId = context?.stateUser?.user?.id;
+console.log("Auth Context State:", context.stateUser);
+
+    useEffect(() => {
+       if (!userId) {
+    // If no userId (logged out), do not start polling
+    setNotificationCount(0); // reset count if needed
+    return;
+  }
+      const fetchUnseenCount = async () => {
+        try {
+          const response = await axios.get(`${baseURL}/remarks/unseen/${userId}`);
+          const unseen = response.data.unseenCount || 0;
+          setNotificationCount(unseen);
+        } catch (error) {
+          error("Error fetching unseen remark count:", error);
+          setNotificationCount(0);
+        }
+      };
+
+      fetchUnseenCount(); // Initial
+      const interval = setInterval(fetchUnseenCount, 10000); // Every 10s
+
+      return () => clearInterval(interval); // Cleanup
+      }, [userId]);
+
+ const handleLogout = async () => {
+    try {
+      const token = await AsyncStorage.getItem('jwt');
+
+      // Call your logout API endpoint with the Bearer token
+      await axios.get(
+        `${baseURL}/logout`,
+          {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        },
+        {}
+      
+      );
+
+      // Clear JWT from AsyncStorage
+      await AsyncStorage.removeItem('jwt');
+
+      // Dispatch logout action
+      dispatch({
+        type: 'LOGOUT',
+      });
+
+      Toast.show({
+        type: 'success',
+        text1: 'Logout Successful',
+      });
+
+      // Redirect to login
+      navigation.navigate('Login');
+
+    } catch (error) {
+      console.log('Logout error:', error?.response || error.message);
+      Toast.show({
+        type: 'error',
+        text1: 'Logout Failed',
+        text2: error?.response?.data?.message || 'Try again later.',
+      });
+    }
+  };
+
   return (
     <View style={styles.container}>
       <ImageBackground
@@ -34,7 +115,7 @@ const HomeScreen = ({ navigation }) => {
           </TouchableOpacity>
 
           <TouchableOpacity
-            onPress={() => navigation.navigate("Login")}
+              onPress={handleLogout}
             style={styles.logoutContainer}
           >
             <Text style={styles.logoutText}>Logout</Text>
@@ -68,7 +149,17 @@ const HomeScreen = ({ navigation }) => {
               style={styles.actionItem}
               onPress={() => navigation.navigate("Notification")}
             >
-              <Icon name="bell" size={wp(6)} color="#E3963E" />
+                <View style={{ position: 'relative' }}>
+                  <Icon name="bell" size={wp(6)} color="#E3963E" />
+                  {notificationCount > 0 && (
+                    <View style={styles.badge}>
+                      <Text style={styles.badgeText}>
+                        {notificationCount > 99 ? '99+' : notificationCount}
+                      </Text>
+                    </View>
+                  )}
+                </View>
+
               <Text style={styles.actionText}>Notification</Text>
             </TouchableOpacity>
 
@@ -235,6 +326,26 @@ const styles = StyleSheet.create({
     color: "#ffffff",
     fontWeight: "bold",
   },
+
+  badge: {
+  position: 'absolute',
+  top: -4,
+  right: -8,
+  backgroundColor: 'red',
+  borderRadius: wp(4),
+  minWidth: wp(4),
+  height: wp(4),
+  justifyContent: 'center',
+  alignItems: 'center',
+  paddingHorizontal: wp(0.8),
+  zIndex: 10,
+},
+badgeText: {
+  color: 'white',
+  fontSize: wp(2.5),
+  fontWeight: 'bold',
+},
+
 });
 
 export default HomeScreen;

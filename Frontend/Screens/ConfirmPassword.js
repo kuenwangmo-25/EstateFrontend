@@ -3,22 +3,59 @@ import { Text, TouchableOpacity, StyleSheet, Image, View } from 'react-native';
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen'; 
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'; 
 import Icon from 'react-native-vector-icons/FontAwesome5'; 
+import Header from '../Shared/Header';
+
 import FormContainer from '../Shared/FormContainer';
 import Input from '../Shared/Input';
+import baseURL from '../assets/common/baseUrl';
+import axios from 'axios';
+import Toast from 'react-native-toast-message'; // Make sure this is imported at the top
 
-const ConfirmPassword = ({ navigation }) => {
-  const [password, setPassword] = useState('');
+const ConfirmPassword = ({ navigation,route }) => {
+  const [otp, setOTP] = useState('');
   const [error, setError] = useState('');
+  const { email } = route.params; // Get the email passed from RegisterScreen
 
-  const handleConfirm = () => {
-    if (password.trim() === '') {
-      setError('Please enter the default password');
-      setTimeout(() => setError(''), 3000); // show error for 3 seconds
+  const handleConfirm = async () => {
+    if (otp.trim() === '') {
+      setError('Please enter the OTP');
+      Toast.show({
+        type: 'error',
+        text1: 'Missing OTP',
+        text2: 'Please enter the OTP',
+      });
+      setTimeout(() => setError(''), 1000);
       return;
     }
-    // Clear error if any and navigate
-    setError('');
-    navigation.navigate('Home');
+
+    try {
+      const response = await axios.post(`${baseURL}/register`, {
+        email,
+        otp,
+      });
+
+      if (response.data.status === 'success') {
+        Toast.show({
+          type: 'success',
+          text1: 'OTP Verified',
+          text2: 'Welcome!',
+        });
+        navigation.navigate('Login');
+      } else {
+        Toast.show({
+          type: 'error',
+          text1: 'Invalid OTP',
+          text2: response.data.message || 'Please try again',
+        });
+      }
+    } catch (err) {
+      console.error(err);
+      Toast.show({
+        type: 'error',
+        text1: 'Verification Failed',
+        text2: err?.response?.data?.message || 'Something went wrong',
+      });
+    }
   };
 
   return (
@@ -26,6 +63,8 @@ const ConfirmPassword = ({ navigation }) => {
       contentContainerStyle={styles.container} 
       keyboardShouldPersistTaps="handled" 
     >
+    <Header navigation={navigation} />
+
       <Image source={require('../assets/Images/logo.png')} style={styles.logo} />
 
       <FormContainer>
@@ -39,11 +78,11 @@ const ConfirmPassword = ({ navigation }) => {
         {error ? <Text style={styles.errorText}>{error}</Text> : null}
 
         <Input
-          placeholder="Password"
-          name="password"
-          id="password"
-          value={password}
-          onChangeText={setPassword}
+          placeholder="Enter Otp"
+          name="otp"
+          id="otp"
+          value={otp}
+          onChangeText={setOTP}
           keyboardType="numeric"
           icon={
             <View style={{ flexDirection: 'row', alignItems: 'center' }}>
@@ -57,10 +96,10 @@ const ConfirmPassword = ({ navigation }) => {
         <View style={styles.button}>
           <TouchableOpacity 
             onPress={handleConfirm} 
-            disabled={password.trim() === ''}  // disable if password is empty
-            activeOpacity={password.trim() === '' ? 1 : 0.7}
+            disabled={otp.trim() === ''}  // disable if password is empty
+            activeOpacity={otp.trim() === '' ? 1 : 0.7}
           >
-            <Text style={[styles.buttonText, password.trim() === ''  ]}>
+            <Text style={[styles.buttonText, otp.trim() === ''  ]}>
               Confirm
             </Text>
           </TouchableOpacity>

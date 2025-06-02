@@ -3,21 +3,54 @@ import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image } from 'reac
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen'; 
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'; 
 import Header from '../Shared/Header';
+import baseURL from '../assets/common/baseUrl';
+import axios from 'axios';
+import Toast from 'react-native-toast-message';
 
 const FeedbackScreen = ({ navigation }) => {
   const [feedback, setFeedback] = useState('');
   const [error, setError] = useState('');  // <-- error message state
 
-  const handleSubmit = () => {
-    if (!feedback.trim()) {
-      setError('Please enter your feedback before submitting.');
+  const handleSubmit = async() => {
+  if (!feedback.trim()) {
+      Toast.show({
+        type: 'error',
+        text1: 'Error',
+        text2: 'Feedback cannot be empty.',
+      });
       return;
     }
 
-    console.log('Feedback submitted:', feedback);
-    setFeedback('');
-    setError('');
+    try {
+      const response = await axios.post(`${baseURL}/feedback`, {
+        Feedback:feedback
+      });
+
+
+      if (response.status === 200) {
+        Toast.show({
+          type: 'success',
+          text1: 'Success',
+          text2: 'Feedback submitted successfully!',
+        });
+        setFeedback('');
+      } else {
+        Toast.show({
+          type: 'error',
+          text1: 'Error',
+          text2: 'Failed to submit feedback.',
+        });
+      }
+    } catch (error) {
+      console.error('Error submitting feedback:', error);
+      Toast.show({
+        type: 'error',
+        text1: 'Error',
+        text2: 'Could not connect to the server.',
+      });
+    }
   };
+
 
   return (
     <KeyboardAwareScrollView contentContainerStyle={styles.container} enableOnAndroid>

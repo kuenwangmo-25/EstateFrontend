@@ -5,12 +5,19 @@ import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-nat
 
 export default function IssueDetailScreen({ route, navigation }) {
   const { issue } = route.params || {};
-  const category = issue?.category || 'Plumbing';
-  const description = issue?.description || 'Water leakage detected in the ceiling of the room.';
-  const date = issue?.date || '20/05/2025';
-  const location = issue?.location || 'Block P';
-  const status = issue?.status || 'Pending';
-  const image = issue?.image || require('../assets/Images/leakage.png');
+
+   // Extract relevant fields from issue
+  const description = issue.description;
+  const date = issue.dateAvail
+    ? new Date(issue.dateAvail).toLocaleDateString()
+    : 'Not available';
+  const location = issue.location;
+  const image = issue.photo
+    ? { uri: issue.photo } // If photo is a URL or base64 path
+    : null; // fallback
+  const status = issue.status?.name || 'Pending';
+  const category = issue.category?.name || 'Uncategorized';
+
 
   return (
     <ScrollView contentContainerStyle={styles.screen}>
@@ -44,13 +51,18 @@ export default function IssueDetailScreen({ route, navigation }) {
           <Text style={styles.value}>{location}</Text>
         </View>
 
-        <View style={styles.imagePreviewContainer}>
-          <Image
-            source={image}
-            style={styles.attachmentImage}
-            resizeMode="cover"
-          />
-        </View>
+            {image ? (
+      <View style={styles.imagePreviewContainer}>
+        <Image
+          source={image}
+          style={styles.attachmentImage}
+          resizeMode="cover"
+        />
+      </View>
+    ) : (
+      <Text style={styles.value}>No image available</Text>
+    )}
+
 
         <View style={styles.detailRow}>
           <Text style={styles.label}>Status:</Text>

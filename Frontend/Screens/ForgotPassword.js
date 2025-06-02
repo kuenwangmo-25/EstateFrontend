@@ -12,23 +12,72 @@ import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view
 import FormContainer from '../Shared/FormContainer';
 import Input from '../Shared/Input';
 import Header from '../Shared/Header';
+import Toast from 'react-native-toast-message'; // Make sure this is imported at the top
+import axios from 'axios';
+import baseURL from '../assets/common/baseUrl';
 
 const ForgotPassword = ({ navigation }) => {
   const [email, setEmail] = useState('');
   const [error, setError] = useState('');
+  
+  const validateEmail = (email) => {
+    const regex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
+    return regex.test(email);
+  };
+  const handleConfirm = async () => {
 
-  const handleConfirm = () => {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (email.trim() === '') {
-      setError('Please enter your email');
-      return;
+
+ if (email.trim() === '') {
+          Toast.show({
+            type: 'error',
+            text1: 'Missing Email',
+            text2: 'Please enter your email',
+          });
+          return;
+       }
+
+    if (!validateEmail(email)) {
+          Toast.show({
+            type: 'error',
+            text1: 'Invalid Email',
+            text2: 'Please enter a valid email address',
+          });
+          return;
+     }
+
+     try {
+      const response = await axios.post(`${baseURL}/register`, {
+        email : email,
+      });
+      console.log(response.data)
+
+      if (response.data.status === 'success') {
+        Toast.show({
+          type: 'success',
+          text1: 'OTP Sent',
+          text2: 'Please check your email',
+        });
+        navigation.navigate('confirmPassword', { email }); // Pass email to OTP screen
+      }
+    } catch (error) {
+
+      const errorMessage = error?.response?.data?.message;
+      console.error(error);
+
+      if (errorMessage === 'User not Registered by the Admin') {
+        Toast.show({
+          type: 'error',
+          text1: 'Access Denied',
+          text2: 'You must be registered by an admin to proceed.',
+        });
+      } else {
+        Toast.show({
+          type: 'error',
+          text1: 'Error',
+          text2: errorMessage || 'Something went wrong',
+        });
+      }
     }
-    if (!emailRegex.test(email)) {
-      setError('Please enter a valid email address');
-      return;
-    }
-    setError('');
-    navigation.navigate('DefaultPassword');
   };
 
   return (

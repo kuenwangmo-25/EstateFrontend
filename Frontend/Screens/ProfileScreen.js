@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import {
   View,
   Text,
@@ -14,12 +14,18 @@ import {
   heightPercentageToDP as hp,
 } from "react-native-responsive-screen";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
+import Toast from 'react-native-toast-message';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import axios from 'axios';
+import AuthGlobal from "../Context/store/AuthGlobal";
+import baseURL from "../assets/common/baseUrl";
 
 const ProfileScreen = ({ navigation }) => {
+  const [userProfile, setUserProfile] = useState(null);
   const [showResetFields, setShowResetFields] = useState(false);
-  const [oldPassword, setOldPassword] = useState("");
-  const [newPassword, setNewPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
+   const [passwordCurrent, setOldPassword] = useState("");
+  const [password, setNewPassword] = useState("");
+  const [passwordConfirm, setConfirmPassword] = useState("");
 
   const [showOld, setShowOld] = useState(false);
   const [showNew, setShowNew] = useState(false);
@@ -28,6 +34,26 @@ const ProfileScreen = ({ navigation }) => {
   // For inline error messages
   const [newPassError, setNewPassError] = useState("");
   const [confirmPassError, setConfirmPassError] = useState("");
+  const context = useContext(AuthGlobal);
+
+    useEffect(() => {
+      AsyncStorage.getItem("jwt")
+        .then((res) => {
+          if (context?.stateUser?.user?.id) {
+            axios.get(`${baseURL}/me`, {
+                headers: { Authorization: `Bearer ${res}` },
+              })
+                .then((user) => {
+                console.log("userprofile fetched:", user.data); // ✅ Log correct object
+
+                  setUserProfile(user.data.data);
+                })
+                .catch((err) => console.log(err));
+          }
+        })
+        .catch((error) => console.log(error));
+
+    }, [context?.stateUser?.isAuthenticated]);
 
   const handleResetClick = () => {
     setShowResetFields(true);
@@ -39,10 +65,10 @@ const ProfileScreen = ({ navigation }) => {
     return regex.test(password);
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     let valid = true;
 
-    if (!validatePassword(newPassword)) {
+    if (!validatePassword(password)) {
       setNewPassError(
         "Password must be 8+ chars, include uppercase, number & special char."
       );
@@ -51,23 +77,62 @@ const ProfileScreen = ({ navigation }) => {
       setNewPassError("");
     }
 
-    if (newPassword !== confirmPassword) {
+    if (password !== passwordConfirm) {
       setConfirmPassError("New Password and Confirm Password do not match.");
       valid = false;
     } else {
       setConfirmPassError("");
     }
+     if (!passwordCurrent || !password || !passwordConfirm) {
+    Toast.show({
+      type: 'error',
+      text1: 'Missing Fields',
+      text2: 'Please fill in all password fields.',
+    });
+    return;
+  }
 
     if (!valid) return;
 
     // Submit logic here
-    console.log("Old:", oldPassword, "New:", newPassword, "Confirm:", confirmPassword);
+    
+  try {
+    const token = await AsyncStorage.getItem("jwt");
 
+    const response = await axios.patch(
+
+      `${baseURL}/updatePassword`,
+      {
+        passwordCurrent,
+        password,
+        passwordConfirm
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    Toast.show({
+      type: 'success',
+      text1: 'Password Changed',
+      text2: 'Your password has been updated successfully.',
+    });
     setShowResetFields(false);
     setOldPassword("");
     setNewPassword("");
     setConfirmPassword("");
+  } catch (error) {
+      console.error("Error updating password:", error);
+      Toast.show({
+        type: 'error',
+        text1: 'Update Failed',
+        text2: error.response?.data?.message || 'Something went wrong.',
+      });
+    }
   };
+
 
   const handleCancel = () => {
     setShowResetFields(false);
@@ -99,15 +164,10 @@ const ProfileScreen = ({ navigation }) => {
             <View style={styles.line} />
           </View>
 
-          <Text style={styles.info}>
-            <Text style={styles.label}>Name: </Text>Jigme Dema
-          </Text>
-          <Text style={styles.info}>
-            <Text style={styles.label}>Email: </Text>12210053.gcit@rub.edu.bt
-          </Text>
-          <Text style={styles.info}>
-            <Text style={styles.label}>Member Type: </Text>Student
-          </Text>
+            <Text style={styles.info}><Text style={styles.label}>Name: </Text>{userProfile?.name}</Text>
+          <Text style={styles.info}><Text style={styles.label}>Email: </Text>{userProfile?.email}</Text>
+          <Text style={styles.info}><Text style={styles.label}>Member Type: </Text>{userProfile?.role}</Text>
+
 
           {!showResetFields ? (
             <TouchableOpacity onPress={handleResetClick}>
@@ -119,7 +179,7 @@ const ProfileScreen = ({ navigation }) => {
                 <TextInput
                   placeholder="Old Password"
                   secureTextEntry={!showOld}
-                  value={oldPassword}
+                  value={passwordCurrent}
                   onChangeText={setOldPassword}
                   style={styles.input}
                 />
@@ -135,7 +195,7 @@ const ProfileScreen = ({ navigation }) => {
                 <TextInput
                   placeholder="New Password"
                   secureTextEntry={!showNew}
-                  value={newPassword}
+                  value={password}
                   onChangeText={(text) => {
                     setNewPassword(text);
                     // live validation on typing (optional)
@@ -164,10 +224,10 @@ const ProfileScreen = ({ navigation }) => {
                 <TextInput
                   placeholder="Confirm Password"
                   secureTextEntry={!showConfirm}
-                  value={confirmPassword}
+                  value={passwordConfirm}
                   onChangeText={(text) => {
                     setConfirmPassword(text);
-                    if (newPassword !== text) {
+                    if (password !== text) {
                       setConfirmPassError("New Password and Confirm Password do not match.");
                     } else {
                       setConfirmPassError("");

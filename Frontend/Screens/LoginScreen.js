@@ -1,22 +1,34 @@
-import React, { useState } from 'react';
+import React, { useState, useContext, useEffect } from "react";
 import {
   Text,
   View,
   TextInput,
   TouchableOpacity,
   StyleSheet,
-  Image,
+  Image,ActivityIndicator
 } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import Feather from 'react-native-vector-icons/Feather';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import jwt_decode from "jwt-decode";
+import AuthGlobal from '../Context/store/AuthGlobal';
+import baseURL from '../assets/common/baseUrl';
+import axios from 'axios';
+import Toast from 'react-native-toast-message';
+
+
 
 const LoginScreen = ({ navigation }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false); // New loading state
+  
+  const { stateUser, dispatch } = useContext(AuthGlobal); // Access context state and dispatch
+
 
   const validateEmail = (email) => {
     const regex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
@@ -28,16 +40,67 @@ const LoginScreen = ({ navigation }) => {
     return regex.test(password);
   };
 
-  const handleLogin = () => {
-    if (!email || !password || !validateEmail(email) || !validatePassword(password)) {
-      setError('Email or password is incorrect');
-      setTimeout(() => setError(''), 2000);
+  const handleLogin = async () => {
+    if (!email || !password || !validateEmail(email) ) {
+       Toast.show({
+        type: 'error',
+        text1: 'Missing Fields',
+        text2: 'Please fill in your credentials',
+      });
       return;
     }
+  
 
-    setError('');
-    console.log('Logging in with:', email, password);
-    navigation.replace('Home');
+  
+    try {
+      const response = await axios.post(`${baseURL}/login`, {
+        email,
+        password,
+      });
+      console.log(response.data.status)
+      if (response.data.status === 'success') {
+
+        const token = response.data.token;
+        console.log(token)
+
+        await AsyncStorage.setItem('jwt', token);
+        const decoded = jwt_decode(token);
+        console.log("decode:",decoded)
+  
+        // Dispatch login success to context
+        dispatch({
+          type: 'SET_CURRENT_USER',
+          payload: decoded, // or response.data.user if available
+        });
+
+        console.log("decoded",decoded)
+
+        Toast.show({
+          type: 'success',
+          text1: 'Login Successful',
+          text2: 'Welcome back!',
+        });
+        navigation.navigate("Home");  // Navigate right after login
+
+  
+      } else {
+        Toast.show({
+          type: 'error',
+          text1: 'Login Failed',
+          text2: 'Invalid credentials',
+        });
+      }
+  
+    } catch (error) {
+      Toast.show({
+        type: 'error',
+        text1: 'Login Failed',
+        text2: error?.response?.data?.message || 'Incorrect email or password',
+        
+      });
+    }finally {
+      setLoading(false);
+    }
   };
 
   const handleForgotPassword = () => {
@@ -97,9 +160,14 @@ const LoginScreen = ({ navigation }) => {
         </TouchableOpacity>
       </View>
 
-      <TouchableOpacity style={styles.loginButton} onPress={handleLogin}>
-        <Text style={styles.loginButtonText}>Login</Text>
-      </TouchableOpacity>
+      <TouchableOpacity style={styles.loginButton} onPress={handleLogin} disabled={loading}>
+  {loading ? (
+    <ActivityIndicator size="small" color="#fff" />
+  ) : (
+    <Text style={styles.loginButtonText}>Login</Text>
+  )}
+</TouchableOpacity>
+
     </KeyboardAwareScrollView>
   );
 };

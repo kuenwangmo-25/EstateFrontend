@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import {
   View,
   Text,
@@ -13,58 +13,72 @@ import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
+import baseURL from '../assets/common/baseUrl';
+import axios from 'axios';
+import AuthGlobal from '../Context/store/AuthGlobal';
 
-const issues = [
-  { id: '1', category: 'Electric', title: 'Switch not working', date: 'Today' },
-  { id: '2', category: 'Carpentry', title: 'Door is broken', date: 'Today' },
-  { id: '3', category: 'Cleaning', title: 'Request for cleaning the class', date: 'Tuesday' },
-  { id: '4', category: 'Plumbing', title: 'Leakage', date: 'Tuesday' },
-  { id: '5', category: 'Electric', title: 'Light flickering in corridor', date: 'Today' },
-  { id: '6', category: 'Electric', title: 'Short circuit in lab', date: 'Tuesday' },
-  { id: '7', category: 'Carpentry', title: 'Chair is broken in room 101', date: 'Tuesday' },
-  { id: '8', category: 'Plumbing', title: 'Tap is leaking', date: '24/09/2024' },
-  { id: '9', category: 'Cleaning', title: 'Garbage not collected', date: '24/09/2024' },
-  { id: '10', category: 'Carpentry', title: 'Desk needs repair', date: '24/09/2024' },
-  { id: '11', category: 'Electric', title: 'Fan not working', date: '24/09/2024' },
-  { id: '12', category: 'Electric', title: 'No power in socket', date: '24/09/2024' },
-  { id: '13', category: 'Cleaning', title: 'Dirty floor in lab 2', date: 'Monday' },
-  { id: '14', category: 'Plumbing', title: 'Overflowing sink', date: 'Monday' },
-  { id: '15', category: 'Carpentry', title: 'Broken drawer', date: 'Monday' },
-  { id: '16', category: 'Electric', title: 'AC not working', date: 'Monday' },
-  { id: '17', category: 'Cleaning', title: 'Spider webs on ceiling', date: 'Monday' },
-  { id: '18', category: 'Electric', title: 'Power cut in west wing', date: 'Monday' },
-  { id: '19', category: 'Plumbing', title: 'Low water pressure', date: 'Monday' },
-  { id: '20', category: 'Carpentry', title: 'Shelf falling off wall', date: 'Monday' },
-  { id: '21', category: 'Electric', title: 'Wiring exposed near stairs', date: 'Monday' },
-  { id: '22', category: 'Cleaning', title: 'Dust on projector', date: 'Monday' },
-];
 
-const groupByDate = (data) => {
-  return data.reduce((groups, item) => {
-    const { date } = item;
+const groupByDate = (issues) => {
+  return issues.reduce((groups, issue) => {
+    const date = new Date(issue.dateReported).toISOString().split('T')[0];
     if (!groups[date]) {
       groups[date] = [];
     }
-    groups[date].push(item);
+    groups[date].push(issue);
     return groups;
   }, {});
 };
 
 export default function IssueListScreen({ navigation }) {
+  
   const [searchQuery, setSearchQuery] = useState('');
+  const context = useContext(AuthGlobal);
+  const userId = context?.stateUser?.user?.id;
+  const [issues, setIssues] = useState([]);
+  const [groupedIssues, setGroupedIssues] = useState({});
+
+  const [loading, setLoading] = useState(true);
 
   const filteredIssues = issues.filter((issue) => {
     const query = searchQuery.toLowerCase();
     return (
-      issue.title.toLowerCase().includes(query) ||
-      issue.category.toLowerCase().includes(query) ||
-      issue.date.toLowerCase().includes(query)
+      issue.description?.toLowerCase().includes(query) ||
+      issue.category?.name?.toLowerCase().includes(query) ||
+      issue.date?.toLowerCase().includes(query)
     );
   });
 
-  const groupedIssues = groupByDate(filteredIssues);
+    useEffect(() => {
+    const fetchIssues = async () => {
+      try {
+        const response = await axios.get(`${baseURL}/issues/${userId}`);
+        const data= response.data.data;
+        setIssues(data);
+
+        if (Array.isArray(data)) {
+          const sortedIssues = data.sort(
+            (a, b) => new Date(b.dateReported) - new Date(a.dateReported)
+          );
+          const grouped = groupByDate(sortedIssues);
+          setGroupedIssues(grouped);
+        } else {
+          console.log('No issues array in response.');
+        }
+      } catch (error) {
+        console.error('Failed to fetch issues:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (userId) {
+      fetchIssues();
+    }
+  }, [userId]);
+  const groupedToRender = groupByDate(filteredIssues);
 
   const renderItem = ({ item }) => (
+
     <TouchableOpacity
       style={styles.card}
       onPress={() => navigation.navigate('IssueDetail', { issue: item })}
@@ -73,9 +87,9 @@ export default function IssueListScreen({ navigation }) {
         <View style={styles.iconBox}>
           <Ionicons name="alert-circle" size={20} color="white" />
         </View>
-        <Text style={styles.category}>{item.category}</Text>
+        <Text style={styles.category}>{item.category?.name}</Text>
       </View>
-      <Text style={styles.title}>{item.title}</Text>
+      <Text style={styles.title}>{item.description}</Text>
     </TouchableOpacity>
   );
 
@@ -86,7 +100,7 @@ export default function IssueListScreen({ navigation }) {
       </View>
       <FlatList
         data={groupedIssues[date]}
-        keyExtractor={(item) => item.id}
+        keyExtractor={(item) => item._id}
         renderItem={renderItem}
         ItemSeparatorComponent={() => <View style={styles.separator} />}
         scrollEnabled={false} // prevent inner scrolling
@@ -95,22 +109,35 @@ export default function IssueListScreen({ navigation }) {
   );
 
   return (
-    <SafeAreaView style={styles.container}>
-      <Header1 navigation={navigation} onSearch={setSearchQuery} />
+  <SafeAreaView style={styles.container}>
+    <Header1 navigation={navigation} onSearch={setSearchQuery} />
 
-      {filteredIssues.length === 0 ? (
-        <Text style={styles.noResultText}>No issues found.</Text>
-      ) : (
-        <FlatList
-          data={Object.keys(groupedIssues)}
-          keyExtractor={(date) => date}
-          renderItem={renderSection}
-          contentContainerStyle={styles.listContent}
-          showsVerticalScrollIndicator={false}
-        />
-      )}
-    </SafeAreaView>
-  );
+    {Object.keys(groupedToRender).length === 0 ? (
+      <Text style={styles.noResultText}>No issues found.</Text>
+    ) : (
+      <FlatList
+        data={Object.keys(groupedToRender)}
+        keyExtractor={(date) => date}
+        renderItem={({ item: date }) => (
+          <View style={styles.sectionWrapper}>
+            <View style={styles.dateHeader}>
+              <Text style={styles.dateText}>{date}</Text>
+            </View>
+            <FlatList
+              data={groupedToRender[date]}
+              keyExtractor={(item) => item.id}
+              renderItem={renderItem}
+              ItemSeparatorComponent={() => <View style={styles.separator} />}
+              scrollEnabled={false}
+            />
+          </View>
+        )}
+        contentContainerStyle={styles.listContent}
+        showsVerticalScrollIndicator={false}
+      />
+    )}
+  </SafeAreaView>
+);
 }
 
 const styles = StyleSheet.create({

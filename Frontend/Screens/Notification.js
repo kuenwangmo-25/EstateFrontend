@@ -1,32 +1,63 @@
-import  { useState } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { View, Text, StyleSheet, ScrollView } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import Header1 from '../Shared/Header1';
+import baseURL from '../assets/common/baseUrl';
+import axios from 'axios';
+import AuthGlobal from '../Context/store/AuthGlobal';
 
-const notifications = [
-  { id: '1', title: 'Issue Solved', description: 'Your issue has been solved', date: 'Today' },
-  { id: '2', title: 'Issue in Progress', description: 'We are working on your issue', date: 'Today' },
-  { id: '3', title: 'Delay in Service', description: 'Lorem Ipsum is simply dummy text of the printing and typesetting industry.', date: 'Tuesday' },
-  { id: '4', title: 'Issue Solved', description: 'Your issue has been solved', date: 'Tuesday' },
-  { id: '5', title: 'Issue Solved', description: 'Your issue has been solved', date: '24/02/2024' },
-  { id: '6', title: 'Issue Solved', description: 'Your issue has been solved', date: '24/02/2024' },
-  { id: '7', title: 'New Issue Reported', description: 'A new issue has been reported.', date: '24/02/2024' },
-  { id: '8', title: 'Issue Closed', description: 'Your issue has been successfully closed.', date: '25/02/2024' },
-  { id: '9', title: 'Maintenance Update', description: 'Scheduled maintenance will occur on the weekend.', date: '25/02/2024' },
-];
 
 const NotificationScreen = ({ navigation }) => {
   const [searchQuery, setSearchQuery] = useState('');
+   const [notifications, setNotifications] = useState([]);
+  const context = useContext(AuthGlobal);
+  const userId = context?.stateUser?.user?.id;
 
   
-  const filteredNotifications = notifications.filter((notification) => {
+  // Fetch notifications from the backend
+  useEffect(() => {
+    const fetchNotifications = async () => {
+      try {
+        const response = await axios.get(`${baseURL}/remarks/${userId}`);
+        if (response.data.status === 'success') {
+          setNotifications(response.data.data); // Set the notifications data in state
+        }
+      } catch (error) {
+        console.error('Error fetching notifications:', error);
+        Alert.alert('Error', 'Something went wrong');
+      }
+    };
+    const markRemarksAsSeen = async () => {
+    try {
+      await axios.put(`${baseURL}/remarks/mark-seen/${userId}`);
+    } catch (error) {
+      console.error('Failed to mark remarks as seen:', error);
+    }
+  };
+
+    fetchNotifications();
+      markRemarksAsSeen();
+
+
+    // Set polling interval to check for new remarks every 30 seconds
+    const interval = setInterval(fetchNotifications, 30000); // 30 seconds polling
+
+    // Cleanup polling on component unmount
+    return () => clearInterval(interval);
+  }, [userId]); // Re-run when userId changes
+
+  
+const filteredNotifications = notifications
+  .filter((notification) => notification.latestRemark !== null)
+  .filter((notification) => {
     const query = searchQuery.toLowerCase();
-    return (
-      notification.title.toLowerCase().includes(query) ||
-      notification.date.toLowerCase().includes(query)
-    );
+    const categoryName = notification?.category?.toLowerCase() || '';
+    const remarkMessage = notification?.latestRemark?.message?.toLowerCase() || '';
+    return categoryName.includes(query) || remarkMessage.includes(query);
   });
+
+
 
   return (
     <View style={styles.container}>
@@ -50,8 +81,8 @@ const NotificationScreen = ({ navigation }) => {
               <View style={styles.notificationContent}>
                 <Ionicons name="person-circle" size={40} color="#097969" style={styles.icon} />
                 <View style={styles.textContainer}>
-                  <Text style={styles.notificationTitle}>{item.title}</Text>
-                  <Text style={styles.notificationDescription}>{item.description}</Text>
+                  <Text style={styles.notificationTitle}>{item.category}</Text>
+                  <Text style={styles.notificationDescription}>{item.latestRemark?.message}</Text>
                 </View>
               </View>
             </View>

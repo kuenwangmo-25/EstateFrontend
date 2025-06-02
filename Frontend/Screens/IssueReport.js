@@ -1,8 +1,8 @@
-import React, { useState } from "react";
+import React, { useState ,useEffect} from "react";
 import {
   View, Text, TextInput, TouchableOpacity,
   Image, StyleSheet, Modal, FlatList,
-  KeyboardAvoidingView, Platform, Dimensions
+  KeyboardAvoidingView, Platform, Dimensions,ActivityIndicator
 } from "react-native";
 import DropDownPicker from "react-native-dropdown-picker"; 
 import DateTimePicker from "@react-native-community/datetimepicker";
@@ -11,6 +11,12 @@ import { Button } from "react-native-paper";
 import Icon from "react-native-vector-icons/FontAwesome";
 import Header from '../Shared/Header';
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
+import Toast from "react-native-toast-message";
+import axios from "axios";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import baseURL from '../assets/common/baseUrl';
+
+
 
 const IssueReport = ({ navigation }) => {
   const [location, setLocation] = useState("");
@@ -24,19 +30,32 @@ const IssueReport = ({ navigation }) => {
   const [imageDimensions, setImageDimensions] = useState(null);
   const [imagePickerVisible, setImagePickerVisible] = useState(false);
   const [successModalVisible, setSuccessModalVisible] = useState(false);
+  const [loading, setLoading] = useState(false); // New loading state
 
   const [open, setOpen] = useState(false);
   const [category, setCategory] = useState(null);
-  const [items, setItems] = useState([
-    { label: "Electrical", value: "Electrical" },
-    { label: "Plumbing", value: "Plumbing" },
-    { label: "Carpentry", value: "Carpentry" },
-    { label: "Cleaning", value: "Cleaning" },
-  ]);
+  const [items, setItems] = useState([]);
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const res = await axios.get(`${baseURL}/getallcategories`);
+        const formattedItems = res.data.data.map((cat) => ({
+          label: cat.name,
+          value: cat._id,
+        }));
+        setItems(formattedItems);
+      } catch (err) {
+        console.error("Failed to load categories:", err.message);
+      }
+    };
+    fetchCategories();
+  }, []);
 
   const [locationError, setLocationError] = useState(false);
   const [categoryError, setCategoryError] = useState(false);
   const [descriptionError, setDescriptionError] = useState(false);
+  
 
   const validateContact = (text) => {
     if (text.length > 8) return;
@@ -72,7 +91,8 @@ const IssueReport = ({ navigation }) => {
     setImagePickerVisible(false);
   };
 
-  const handleSubmit = () => {
+ 
+  const handleSubmit = async () => {
     setLocationError(false);
     setCategoryError(false);
     setDescriptionError(false);
@@ -97,10 +117,64 @@ const IssueReport = ({ navigation }) => {
 
     if (!valid) return;
 
-    console.log("Issue Submitted:", { location, contact, category, date, description, image });
-    setSuccessModalVisible(true);
-  };
+    try {
+      setLoading(true);
+      const token = await AsyncStorage.getItem("jwt");
+      if (!token) {
+        alert("You are not authenticated.");
+        setLoading(false);
+        return;
+      }
 
+      const formData = new FormData();
+      formData.append("location", location);
+      formData.append("contactNo", contact);
+      formData.append("description", description);
+      formData.append("category", category);
+      formData.append("dateAvail", date.toISOString());
+
+      if (image) {
+        const fileName = image.split('/').pop();
+        const fileType = fileName.split('.').pop();
+        formData.append("photo", {
+          uri: image,
+          type: `image/${fileType}`,
+          name: fileName,
+        });
+      }
+
+      const response = await axios.post(`${baseURL}/issue`, formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (response.status === 201) {
+        Toast.show({
+          type: 'success',
+          text1: 'Success',
+          text2: 'Issue reported successfully!',
+        });
+        navigation.goBack();
+      } else {
+        Toast.show({
+          type: 'error',
+          text1: 'Submission Failed',
+          text2: 'Something went wrong.',
+        });
+      }
+    } catch (err) {
+      console.error(err);
+      Toast.show({
+        type: 'error',
+        text1: 'Error',
+        text2: 'Failed to submit issue.',
+      });
+    } finally {
+      setLoading(false);
+    }
+  };  
   const formattedDate = `${date.toLocaleString('default', { month: 'long' })} ${date.getDate()}`;
 
   const handleDateChange = (event, selectedDate) => {
@@ -152,9 +226,10 @@ const IssueReport = ({ navigation }) => {
                 placeholder="Contact"
                 style={[styles.input, { borderColor: contact === "" ? "#ccc" : contactValid ? "green" : "red" }]}
                 value={contact}
-                onChangeText={validateContact}
                 keyboardType="phone-pad"
                 maxLength={8}
+                onChangeText={validateContact}
+
               />
               {!contactValid && contact !== "" && (
                 <Text style={styles.errorText}>
@@ -223,9 +298,17 @@ const IssueReport = ({ navigation }) => {
                 <Image source={{ uri: image }} style={{ ...styles.image, ...imageDimensions }} resizeMode="contain" />
               )}
 
-              <Button mode="contained" onPress={handleSubmit} style={styles.submitButton}>
-                Submit
-              </Button>
+             {loading ? (
+                <ActivityIndicator size="large" color="#097969" />
+              ) : (
+                <Button
+                  mode="contained"
+                  onPress={handleSubmit}
+                  style={styles.submitButton}
+                >
+                  Submit
+                </Button>
+              )}
             </View>
 
             {/* Modals */}
@@ -421,6 +504,7 @@ const styles = StyleSheet.create({
   },
   modalBackground: {
     flex: 1,
+    padding:35,
     justifyContent: 'flex-end',
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
   },
@@ -458,7 +542,7 @@ const styles = StyleSheet.create({
   modalContainer: {
     backgroundColor: "#fff",
     width: wp('80%'),
-    padding: wp('5%'),
+    padding: wp('10%'),
     borderRadius: 8,
     alignItems: "center",
   },
