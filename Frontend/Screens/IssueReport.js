@@ -189,12 +189,14 @@ const IssueReport = ({ navigation }) => {
   const handleDonePress = () => setShowCalendarModal(false);
 
   return (
+    
     <KeyboardAvoidingView
       behavior={Platform.OS === "ios" ? "padding" : "height"}
       style={styles.container}
       keyboardVerticalOffset={hp('10%')}
     >
       <Header navigation={navigation} />
+
       <FlatList
         contentContainerStyle={styles.scrollContainer}
         keyboardShouldPersistTaps="handled"
@@ -262,7 +264,7 @@ const IssueReport = ({ navigation }) => {
                   style={styles.dateBox}
                 >
                   <Text style={styles.dateTextDisplay}>{formattedDate}</Text>
-                  <Icon name="calendar" size={20} color="#7ac943" />
+                  <Icon name="calendar" size={20} color="#E3963E" />
                 </TouchableOpacity>
               </View>
 
@@ -290,7 +292,9 @@ const IssueReport = ({ navigation }) => {
                 <Text style={styles.errorText}>Description is required</Text>
               )}
 
-              <Button icon="camera" mode="outlined" onPress={() => setImagePickerVisible(true)} style={styles.uploadImageButton}>
+              <Button icon="camera" mode="outlined" onPress={() => setImagePickerVisible(true)} style={[styles.uploadImageButton, { TextColor: "#cc" },{borderColor: "#ccc",
+}]}
+  textColor="orange">
                 Upload Image
               </Button>
 
@@ -313,12 +317,9 @@ const IssueReport = ({ navigation }) => {
 
             {/* Modals */}
             <Modal visible={showCalendarModal} transparent animationType="slide" onRequestClose={() => setShowCalendarModal(false)}>
-              <View style={styles.modalBackground}>
+              <View style={styles.CalendermodalBackground}>
                 <View style={styles.calendarModalContainer}>
                   <View style={styles.calendarHeader}>
-                    <Text style={styles.calendarHeaderText}>
-                      {date.toLocaleString('default', { month: 'long' })} {date.getFullYear()}
-                    </Text>
                     <TouchableOpacity onPress={handleDonePress} style={styles.closeButton}>
                       <Text style={styles.closeButtonText}>Done</Text>
                     </TouchableOpacity>
@@ -351,7 +352,7 @@ const IssueReport = ({ navigation }) => {
               </View>
             </Modal>
 
-            <Modal visible={successModalVisible} transparent animationType="fade">
+            {/* <Modal visible={successModalVisible} transparent animationType="fade">
               <View style={styles.successModalBackground}>
                 <View style={styles.successModalContainer}>
                   <Text style={styles.successText}>Your issue has been successfully reported!</Text>
@@ -363,11 +364,12 @@ const IssueReport = ({ navigation }) => {
                   </TouchableOpacity>
                 </View>
               </View>
-            </Modal>
+            </Modal> */}
           </View>
         )}
         keyExtractor={() => "key"}
       />
+      
     </KeyboardAvoidingView>
   );
 };
@@ -402,8 +404,8 @@ const styles = StyleSheet.create({
     height: 1,
     backgroundColor: "#ccc",
     width: '20%',
-    height: 3,
-    backgroundColor: '#097969',
+    // height: 3,
+    // backgroundColor: '#097969',
     marginHorizontal: wp('2%'),
   },
   header: {
@@ -449,7 +451,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    marginBottom: hp('2%'),
+    marginBottom: hp('3%'),
     marginVertical: hp('1.5%'),
   },
   dateText: {
@@ -471,7 +473,7 @@ const styles = StyleSheet.create({
   },
   dateTextDisplay: {
     fontSize: wp('3.5%'),
-    color: "#333",
+    color: "black",
     marginRight: wp('2%'),
   },
   image: {
@@ -484,6 +486,7 @@ const styles = StyleSheet.create({
     width: wp('40%'),
     alignSelf: 'flex-start',
     borderRadius: 8,
+    textColor:"#E3963E",
   },
   submitButton: {
     backgroundColor: '#E3963E',
@@ -508,8 +511,15 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-end',
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
   },
+  CalendermodalBackground:{
+    flex: 1,
+    padding:15,
+    justifyContent: 'flex-end',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+
+  },
   calendarModalContainer: {
-    backgroundColor: 'white',
+    backgroundColor: '#E3963E',
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
     padding: 20,
@@ -526,7 +536,7 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
   closeButton: {
-    backgroundColor: "#7ac943",
+    backgroundColor: "#E3963E",
     borderRadius: 5,
     paddingHorizontal: wp('3%'),
     paddingVertical: hp('1%'),
@@ -552,7 +562,7 @@ const styles = StyleSheet.create({
     marginBottom: hp('2%'),
   },
   modalButton: {
-    backgroundColor: "#7ac943",
+    backgroundColor: "#E3963E",
     paddingVertical: hp('1.2%'),
     paddingHorizontal: wp('6%'),
     borderRadius: 6,

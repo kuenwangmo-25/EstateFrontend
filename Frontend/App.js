@@ -1,19 +1,19 @@
 import React from 'react';
-import { NavigationContainer } from '@react-navigation/native'; // Import NavigationContainer
-import AppNavigator from './Navigation/AppNavigator'
-import Auth from './Context/store/Auth'; // ✅ import Auth provider
+import { NavigationContainer } from '@react-navigation/native';
+import AppNavigator from './Navigation/AppNavigator';
+import Auth from './Context/store/Auth';
 import Toast from 'react-native-toast-message';
 
 const App = () => {
   return (
     <Auth>
-      <NavigationContainer>
-        <AppNavigator /> {/* Use AppNavigator here */}
-      </NavigationContainer>
-      <Toast />
-
+      <>
+        <NavigationContainer>
+          <AppNavigator />
+        </NavigationContainer>
+        <Toast />
+      </>
     </Auth>
-    
   );
 };
 

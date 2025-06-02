@@ -8,6 +8,8 @@ import Input from '../Shared/Input';
 import Toast from 'react-native-toast-message'; // Make sure this is imported at the top
 import axios from 'axios';
 import baseURL from '../assets/common/baseUrl';
+import Header from '../Shared/Header';
+
 
 const OTPConfirmScreen = ({ navigation, route }) => {
   const [otp, setOTP] = useState('');
@@ -63,6 +65,8 @@ const OTPConfirmScreen = ({ navigation, route }) => {
       enableOnAndroid={true}
       extraScrollHeight={hp(10)}
     >
+            <Header navigation={navigation} />
+
       <Image source={require('../assets/Images/logo.png')} style={styles.logo} />
 
       <FormContainer>

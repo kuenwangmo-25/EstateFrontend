@@ -135,6 +135,7 @@ const styles = StyleSheet.create({
     fontSize: wp(4),
     color: '#333',
     marginRight: wp(10),
+    paddingLeft:20
   },
   formContainer: {
     width: '100%',
@@ -164,6 +165,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     alignSelf: 'center',
     paddingVertical: hp(2),
+    marginRight:30,
   },
   buttonText: {
     color: '#fff',

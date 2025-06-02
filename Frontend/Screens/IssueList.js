@@ -125,7 +125,7 @@ export default function IssueListScreen({ navigation }) {
             </View>
             <FlatList
               data={groupedToRender[date]}
-              keyExtractor={(item) => item.id}
+              keyExtractor={(item) => item._id}
               renderItem={renderItem}
               ItemSeparatorComponent={() => <View style={styles.separator} />}
               scrollEnabled={false}

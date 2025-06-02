@@ -159,7 +159,8 @@ const styles = StyleSheet.create({
     marginVertical: hp(1),
     fontSize: wp(4),
     color: '#333',
-    marginRight: '10%',
+    marginRight: wp(10),
+    paddingLeft:20
   },
   formContainer: {
     width: '100%',
@@ -181,7 +182,8 @@ const styles = StyleSheet.create({
   },
   button: {
     marginTop: hp(4),
-    width: wp(60),
+    marginLeft:50,
+    width: wp(50),
     backgroundColor: '#E3963E',
     borderRadius: 8,
     alignItems: 'center',

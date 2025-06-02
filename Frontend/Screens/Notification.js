@@ -74,7 +74,7 @@ const filteredNotifications = notifications
           <Text style={styles.noResultText}>No notifications found.</Text>
         ) : (
           filteredNotifications.map((item, index) => (
-            <View style={styles.notificationBox} key={item.id}>
+            <View style={styles.notificationBox} key={item._id}>
               {(index === 0 || filteredNotifications[index - 1].date !== item.date) && (
                 <Text style={styles.dateHeader}>{item.date}</Text>
               )}
