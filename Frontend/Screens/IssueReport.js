@@ -326,6 +326,7 @@ const IssueReport = ({ navigation }) => {
                   </View>
                   <DateTimePicker
                     value={date}
+                    minimumDate={new Date()}
                     mode="date"
                     display="inline"
                     onChange={handleDateChange}
@@ -352,19 +353,7 @@ const IssueReport = ({ navigation }) => {
               </View>
             </Modal>
 
-            {/* <Modal visible={successModalVisible} transparent animationType="fade">
-              <View style={styles.successModalBackground}>
-                <View style={styles.successModalContainer}>
-                  <Text style={styles.successText}>Your issue has been successfully reported!</Text>
-                  <TouchableOpacity onPress={() => {
-                    setSuccessModalVisible(false);
-                    navigation.goBack();
-                  }} style={styles.successButton}>
-                    <Text style={styles.successButtonText}>OK</Text>
-                  </TouchableOpacity>
-                </View>
-              </View>
-            </Modal> */}
+          
           </View>
         )}
         keyExtractor={() => "key"}
