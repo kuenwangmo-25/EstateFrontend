@@ -42,7 +42,6 @@ const RegisterScreen = ({ navigation }) => {
   }, [email]);
 
   const handleRegister = async () => {
-    console.log('Register button pressed'); // 🔍 DEBUG: Confirm button press
 
     if (email.trim() === '') {
       Toast.show({
@@ -67,7 +66,6 @@ const RegisterScreen = ({ navigation }) => {
         email: email,
       });
 
-      console.log('Response:', response.data); // 🔍 DEBUG: Log server response
 
       if (response.data.status === 'success') {
         Toast.show({
@@ -78,7 +76,6 @@ const RegisterScreen = ({ navigation }) => {
         navigation.navigate('OTPConfirm', { email }); // ✅ Pass email to OTP screen
       }
     } catch (error) {
-      console.error('Register error:', error); // 🔍 DEBUG: Log any errors
 
       const errorMessage = error?.response?.data?.message;
 

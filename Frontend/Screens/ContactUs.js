@@ -21,7 +21,7 @@ const ContactUsScreen = ({ navigation }) => {
             <View style={styles.line}></View>
           </View>
           <Text style={styles.description}>
-            Lorem Ipsum is simply dummy text of the printing and typesetting industry.
+            Get in touch with us! We are here to help you with any inquiries or support you may need.
           </Text>
 
           <View style={styles.contactInfoColumn}>

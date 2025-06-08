@@ -6,6 +6,7 @@ import Header1 from '../Shared/Header1';
 import baseURL from '../assets/common/baseUrl';
 import axios from 'axios';
 import AuthGlobal from '../Context/store/AuthGlobal';
+import Toast from 'react-native-toast-message';
 
 
 const NotificationScreen = ({ navigation }) => {
@@ -24,7 +25,7 @@ const NotificationScreen = ({ navigation }) => {
           setNotifications(response.data.data); // Set the notifications data in state
         }
       } catch (error) {
-        console.error('Error fetching notifications:', error);
+        // console.error('Error fetching notifications:', error);
         Alert.alert('Error', 'Something went wrong');
       }
     };
@@ -32,7 +33,9 @@ const NotificationScreen = ({ navigation }) => {
     try {
       await axios.put(`${baseURL}/remarks/mark-seen/${userId}`);
     } catch (error) {
-      console.error('Failed to mark remarks as seen:', error);
+      // console.error('Failed to mark remarks as seen:', error);
+      Alert.alert('Error', 'Failed to mark as seen');
+
     }
   };
 
@@ -75,8 +78,10 @@ const filteredNotifications = notifications
         ) : (
           filteredNotifications.map((item, index) => (
             <View style={styles.notificationBox} key={item._id}>
-              {(index === 0 || filteredNotifications[index - 1].date !== item.date) && (
-                <Text style={styles.dateHeader}>{item.date}</Text>
+              {(index === 0 || filteredNotifications[index - 1].date !== item.latestRemark?.sentAt) && (
+                  <Text style={styles.dateHeader}>
+                    {new Date(item.latestRemark.sentAt).toLocaleDateString()}
+                  </Text>
               )}
               <View style={styles.notificationContent}>
                 <Ionicons name="person-circle" size={40} color="#097969" style={styles.icon} />
@@ -153,5 +158,6 @@ const styles = StyleSheet.create({
     marginTop: hp(2),
   },
 });
+
 
 export default NotificationScreen;
